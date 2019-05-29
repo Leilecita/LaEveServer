@@ -1,0 +1,49 @@
+[
+    {
+        "name": "hisamu/php-xbase",
+        "version": "1.0.5",
+        "version_normalized": "1.0.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/hisamu/php-xbase.git",
+            "reference": "26ceae6c7ca67d67132b5c1108e5e2906343631d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/hisamu/php-xbase/zipball/26ceae6c7ca67d67132b5c1108e5e2906343631d",
+            "reference": "26ceae6c7ca67d67132b5c1108e5e2906343631d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2017-01-09T22:28:13+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "XBase": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Erwin Kooi",
+                "email": "info@cyane.nl"
+            },
+            {
+                "name": "Luã de Souza",
+                "email": "lsouza@codeinc.com.br"
+            }
+        ],
+        "description": "A simple parser for *.dbf, *.fpt files using PHP",
+        "homepage": "https://github.com/hisamu/php-xbase",
+        "keywords": [
+            "dbase",
+            "foxpro"
+        ]
+    }
+]
