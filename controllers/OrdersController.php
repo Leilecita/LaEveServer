@@ -46,6 +46,9 @@ class OrdersController extends BaseController
         if($_GET['state']== 'tocheck'){
             $this->state_order="state_check";
             $filters[] = 'tocheck = "true"';
+            if(isset($_GET['state_order']) && ($_GET['state_order']) == "pendients"){
+                $filters[] = 'state_check = "tocheck"';
+            }
 
         }else if ($_GET['state']== 'toprepare'){
             $this->state_order="state_prepare";
@@ -64,9 +67,9 @@ class OrdersController extends BaseController
             $filters[] = 'loccli like "%'.$_GET['zone'].'%"';
         }
 
+
         return $filters;
     }
-
 
 
     function getOrdersClient(){
@@ -85,6 +88,7 @@ class OrdersController extends BaseController
                 for ($i = 0; $i < count($items_order_list); ++$i) {
 
                     $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                        'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                         'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded']);
 
                     $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
@@ -102,6 +106,7 @@ class OrdersController extends BaseController
                     'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
                     'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
                     'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
+                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
                     'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
                     'amount_order' => $total_amount);
             }

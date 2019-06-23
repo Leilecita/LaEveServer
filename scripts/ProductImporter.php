@@ -31,5 +31,4 @@ while ($record = $table->nextRecord()) {
     }catch(Exception $e){
         echo 'Error: '.print_r($s,true);
     }
-
 }
