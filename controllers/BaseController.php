@@ -6,7 +6,7 @@
  * Time: 14:48
  */
 date_default_timezone_set('UTC');
-define('PAGE_SIZE',20);
+define('PAGE_SIZE',10);
 
 abstract class BaseController
 {

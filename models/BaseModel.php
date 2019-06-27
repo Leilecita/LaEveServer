@@ -72,7 +72,7 @@ abstract class BaseModel
     function getOrdersClient($filters=array(),$paginator=array(),$order_state){
 
         $conditions = join(' AND ',$filters);
-        $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC , o.created DESC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
         return $this->db->fetch_all($query);
 
     }

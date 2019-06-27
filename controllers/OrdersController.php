@@ -53,10 +53,16 @@ class OrdersController extends BaseController
         }else if ($_GET['state']== 'toprepare'){
             $this->state_order="state_prepare";
             $filters[] = 'toprepare = "true"';
+            if(isset($_GET['state_order']) && ($_GET['state_order']) == "pendients"){
+                $filters[] = 'state_prepare = "toprepare"';
+            }
 
         }else if ($_GET['state']== 'todelivery'){
             $this->state_order="state_delivery";
             $filters[] = 'todelivery = "true"';
+            if(isset($_GET['state_order']) && ($_GET['state_order']) == "pendients"){
+                $filters[] = 'state_delivery = "todelivery"';
+            }
 
         }
         if(isset($_GET['query']) && !empty($_GET['query'])){
