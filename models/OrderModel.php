@@ -29,7 +29,8 @@ class OrderModel extends BaseModel
 
     function countDelivery($delivery_date,$state){
 
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ?',$delivery_date,$state);
+        //$response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ?',$delivery_date,$state);
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ?  AND state_prepare = ?',$delivery_date,$state,"prepare");
 
         if($response['total']!=null){
             return $response['total'];
@@ -41,7 +42,8 @@ class OrderModel extends BaseModel
 
     function countPrepare($delivery_date,$state){
 
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_prepare = ?',$delivery_date,$state);
+        //$response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_prepare = ?',$delivery_date,$state);
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ?  AND state_prepare = ? AND state_check = ?',$delivery_date,$state,"check");
 
         if($response['total']!=null){
             return $response['total'];
