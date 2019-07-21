@@ -14,4 +14,7 @@ class ClientModel extends BaseModel
         $this->tableName = 'clients';
     }
 
+
+
+
 }
