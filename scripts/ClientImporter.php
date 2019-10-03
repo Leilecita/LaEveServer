@@ -15,7 +15,7 @@ use XBase\Table;
 $clientModel = new ClientModel();
 
 
-$table = new Table(dirname(__FILE__).'/clientes.dbf');
+$table = // new Table(dirname(__FILE__).'/clientes.dbf');
 
 $columns = $table->getColumns();
 

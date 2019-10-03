@@ -64,4 +64,73 @@ class OrderModel extends BaseModel
             return $response['total'];
         }
     }
+
+    function countBilling($delivery_date,$state){
+
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_billing = ?',$delivery_date,$state);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+    }
+
+    function sumPaidAmountByWorker($delivery_date,$worker_name,$delivery){
+
+        $response = $this->getDb()->fetch_row('SELECT SUM(paid_amount) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND delivery_by = ? AND state_delivery = ?',$delivery_date,$worker_name,$delivery);
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0.0;
+            return $response['total'];
+        }
+    }
+
+    function sumTotalAmount($delivery_date,$worker_name,$delivery){
+
+        $response = $this->getDb()->fetch_row('SELECT SUM(total_amount) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND delivery_by = ? AND state_delivery = ?',$delivery_date,$worker_name,$delivery);
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0.0;
+            return $response['total'];
+        }
+    }
+
+
+    function countDeliveryOrders($delivery_date,$worker_name,$delivery){
+
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND delivery_by = ? AND state_delivery = ?',$delivery_date,$worker_name,$delivery);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+    }
+
+    function countLoadOrders($delivery_date,$worker_name,$delivery,$loaded_in){
+
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND loaded_by = ? AND state_delivery = ? AND loaded_in != ?',$delivery_date,$worker_name,$delivery,$loaded_in);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+    }
+
+    function getAllOrders($filters=array(),$paginator=array()){
+
+        $conditions = join(' AND ',$filters);
+       // $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC, o.created DESC , o.state_prepare DESC
+        $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.created DESC
+        LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        return $this->getDb()->fetch_all($query);
+
+    }
 }

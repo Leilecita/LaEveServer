@@ -9,17 +9,46 @@
 
 require_once 'BaseController.php';
 require_once __DIR__.'/../models/ClientModel.php';
+require_once __DIR__.'/../models/OrderModel.php';
 
 class ClientsController extends BaseController
 {
+    private $orders;
     function __construct(){
         parent::__construct();
         $this->model = new ClientModel();
+        $this->orders = new OrderModel();
     }
 
     function getZones(){
         $this->returnSuccess(200,$this->getModel()->getSpinner("loccli"));
 
+    }
+
+    public function filterOrderByClientId($client_id)
+    {
+        $filters=array();
+        $filters[] = 'client_id = "'.$client_id.'"';
+        $filters[] = 'state_prepare = "toprepare"';
+        $filters[] = 'state_delivery = "todelivery"';
+
+        return $filters;
+    }
+
+
+     public function checkExistingOrder(){
+
+        if(isset($_GET['client_id'])){
+            $res= $this->orders->findAll($this->filterOrderByClientId($_GET['client_id']),$this->getPaginator());
+            if(empty($res)){
+                $emptylist=array();
+                $this->returnSuccess(200,$emptylist);
+            }else{
+                $this->returnSuccess(200,$res);
+            }
+        }else{
+            $this->returnError(400,"ENTITY NOT FOUND ");
+        }
     }
 
     function get(){
