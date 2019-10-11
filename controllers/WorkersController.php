@@ -64,10 +64,24 @@ class WorkersController extends BaseController
                 $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['id'].'"'));
 
                 $array_item_product = array();
+
+                $array_item_product_rem = array();
+
                 $total_amount=0;
                 for ($i = 0; $i < count($items_order_list); ++$i) {
-                    $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded']);
+
+
+                    if($items_order_list[$i]['billing'] == "remito"){
+                        $array_item_product_rem[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }else{
+                        $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }
+
 
                     $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                 }
@@ -87,7 +101,7 @@ class WorkersController extends BaseController
                     'client_dircli' => $client['dircli'],
                     'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                     'client_comcli' => $client['comcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
+                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
@@ -117,10 +131,22 @@ class WorkersController extends BaseController
                 $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['id'].'"'));
 
                 $array_item_product = array();
+
+                $array_item_product_rem = array();
+
                 $total_amount=0;
                 for ($i = 0; $i < count($items_order_list); ++$i) {
-                    $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded']);
+
+                    if($items_order_list[$i]['billing'] == "remito"){
+                        $array_item_product_rem[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }else{
+                        $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }
 
                     $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                 }
@@ -140,7 +166,7 @@ class WorkersController extends BaseController
                     'client_dircli' => $client['dircli'],
                     'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                     'client_comcli' => $client['comcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
+                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
@@ -182,8 +208,6 @@ class WorkersController extends BaseController
     function getLoadWorkerLiquidation(){
 
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
-
-
 
             $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Mostrador");
 

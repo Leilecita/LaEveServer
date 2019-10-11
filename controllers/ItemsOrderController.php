@@ -21,6 +21,18 @@ class ItemsOrderController extends BaseController
     }
 
 
+    function getFiltersItems($billing){
+        $filters= array();
+
+        $filters[] = 'billing = "'.$billing.'"';
+
+        if(isset($_GET['order_id'])){
+            $filters[] = 'order_id = "'.$_GET['order_id'].'"';
+        }
+
+        return $filters;
+    }
+
 
     function check(){
 
@@ -53,6 +65,16 @@ class ItemsOrderController extends BaseController
             $res = $this->model->save($newItemOrder);
 
         }
+    }
+
+    function getItemsByOrderId(){
+
+        $itemsRem=$this->getModel()->findAllItems($this->getFiltersItems("remito"));
+        $itemsFact=$this->getModel()->findAllItems($this->getFiltersItems("factura"));
+
+        $resp=array('itemsFact' => $itemsFact, 'itemsRem' => $itemsRem);
+
+        $this->returnSuccess(200,$resp);
     }
 
 
