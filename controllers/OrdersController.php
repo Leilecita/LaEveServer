@@ -103,7 +103,6 @@ class OrdersController extends BaseController
         }
 
         return $filters;
-
     }
     function listAllOrders(){
 
@@ -276,6 +275,18 @@ class OrdersController extends BaseController
     }
 
 
+    function deleteRemainingProducts($order_id){
+
+        $filtersItem=array();
+        $filtersItem[] = 'order_id = "' . $order_id . '"';
+        $filtersItem[] = 'loaded = "false"';
+
+        $items_order_list = $this->items_order->findAllItems($filtersItem);
+        for ($i = 0; $i < count($items_order_list); ++$i) {
+            $this->items_order->delete($items_order_list[$i]['id']);
+        }
+    }
+
     function createNewOrderWithReasigneditems($order_id){
 
         $order=$this->getModel()->findById($order_id);
@@ -335,7 +346,6 @@ class OrdersController extends BaseController
             $this->model->update($order_id,array('order_reasigned_id' => -1));
 
         }
-
     }
 
     function isFullOrderCharged(){
@@ -350,7 +360,6 @@ class OrdersController extends BaseController
         }
 
         $this->returnSuccess(200,$resp);
-
     }
 
     function changeStateOrder(){
@@ -372,6 +381,8 @@ class OrdersController extends BaseController
 
                     if($_GET['new'] == "true"){
                         $this->createNewOrderWithReasigneditems($_GET['order_id']);
+                    }else{
+                        $this->deleteRemainingProducts($_GET['order_id']);
                     }
 
                     $this->getModel()->update($_GET['order_id'],array('tobilling' => "true"));
