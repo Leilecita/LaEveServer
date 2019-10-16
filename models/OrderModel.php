@@ -114,7 +114,19 @@ class OrderModel extends BaseModel
 
     function countLoadOrders($delivery_date,$worker_name,$delivery,$loaded_in){
 
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND loaded_by = ? AND state_delivery = ? AND loaded_in != ?',$delivery_date,$worker_name,$delivery,$loaded_in);
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND loaded_by = ? AND state_delivery = ? AND loaded_in = ?',$delivery_date,$worker_name,$delivery,$loaded_in);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+    }
+
+    function countTotalLoadOrders($delivery_date,$worker_name,$delivery){
+
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND loaded_by = ? AND state_delivery = ?',$delivery_date,$worker_name,$delivery);
 
         if($response['total']!=null){
             return $response['total'];

@@ -39,13 +39,14 @@ class WorkersController extends BaseController
         return $filters;
     }
 
-    public function filterLoadWorkers($worker_name,$delivery_date)
+    public function filterLoadWorkers($worker_name,$delivery_date,$loaded_in)
     {
         $filters = array();
 
         $filters[] = 'loaded_by = "' . $worker_name . '"';
+        $filters[] = 'loaded_in = "' . $loaded_in . '"';
         $filters[] = 'state_delivery = "delivery"';
-        $filters[] = 'loaded_in != "Mostrador"';
+       // $filters[] = 'loaded_in != "Mostrador"';
         $filters[] = 'delivery_date = "' .$delivery_date.'"';
 
         return $filters;
@@ -57,7 +58,7 @@ class WorkersController extends BaseController
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
 
             $listReport=array();
-            $list_orders_by_deliver_date=$this->orders->findAll($this->filterLoadWorkers($_GET['worker_name'],$_GET['delivery_date']),$this->getPaginator());
+            $list_orders_by_deliver_date=$this->orders->findAll($this->filterLoadWorkers($_GET['worker_name'],$_GET['delivery_date'],$_GET['loaded_in']),$this->getPaginator());
             for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
 
                 $client= $this->clients->findById($list_orders_by_deliver_date[$j]['client_id']);
@@ -209,7 +210,9 @@ class WorkersController extends BaseController
 
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
 
-            $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Mostrador");
+            $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery",$_GET['loaded_in']);
+
+            $total_load_orders= $this->orders->countTotalLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
 
             $reportWorkerLiquidation=array('total_amount' => 0.0,'total_paid_amount' => 0.0,
                 'quantity_delivery_orders' => 0,'quantity_delivery_pendients' => 0, 'load_orders_quantity' => $loaded_orders
