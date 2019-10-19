@@ -264,17 +264,15 @@ class OrdersController extends BaseController
 
      function isFullOrderCharged(){
 
-        $data="";
         $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
 
-        if($res['total']==0){
-            $data= "true";
+        if($res == 0){
+            return "completa";
         }else{
-             $data="false";
-
+            return "falta";
         }
 
-        $this->returnSuccess(200,$data);
+
 
         // si es mayor a 0 es que hay productos sin cargar. Si es igual a 0 esta completa.
        /* $items_order_list = $this->items_order->findAllItemsCheckComplete(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
@@ -307,7 +305,7 @@ class OrdersController extends BaseController
                 $this->getModel()->update($_GET['order_id'],array('state_prepare' => $_GET['state']));
                 if($_GET['state'] == "prepare"){
 
-                    if($this->isFullOrderCharged()){
+                    if($this->isFullOrderCharged() == "falta"){
 
                         $this->createNewOrderWithReasigneditems($_GET['order_id']);
                     }
