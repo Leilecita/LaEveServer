@@ -211,16 +211,18 @@ class OrdersController extends BaseController
 
         $order=$this->getModel()->findById($order_id);
 
+
         $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
 
         $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
 
         $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
             'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
-            'total_amount' => 0, 'delivery_date'=> "1999-01-01",'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
+            'total_amount' => 0, 'delivery_date'=> $next_date,'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
             'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0,'order_reasigned_id' => -1);
 
-        $res=$this->getModel()->save($newOrder);
+
+        $res=$this->model->save($newOrder);
 
         if($res>= 0){
 
@@ -265,7 +267,6 @@ class OrdersController extends BaseController
      function isFullOrderCharged(){
 
         $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
-
         if($res == 0){
             return "completa";
         }else{
