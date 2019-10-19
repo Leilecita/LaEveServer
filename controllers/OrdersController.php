@@ -86,7 +86,6 @@ class OrdersController extends BaseController
             $filters[] = 'loccli like "%'.$_GET['zone'].'%"';
         }
 
-
         return $filters;
     }
 
@@ -108,48 +107,6 @@ class OrdersController extends BaseController
             $listReport = array();
 
             $list_orders_by_deliver_date = $this->getModel()->getAllOrders($this->miniFilter(),$this->getPaginator());
-/*
-            for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
-
-                $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
-
-                $array_item_product = array();
-                $total_amount=0;
-                for ($i = 0; $i < count($items_order_list); ++$i) {
-
-                    $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                        'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity']);
-
-                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
-
-                }
-
-                $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
-                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
-                    'order_state' => $list_orders_by_deliver_date[$j]['state'],
-                    'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
-                    'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
-                    'order_state_billing' => $list_orders_by_deliver_date[$j]['state_billing'],
-                    'order_state_delivery' => $list_orders_by_deliver_date[$j]['state_delivery'],
-                    'order_signed' => $list_orders_by_deliver_date[$j]['signed'],
-                    'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
-                    'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
-                    'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
-                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
-                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
-                    'amount_order' => $total_amount,
-                    'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
-                    'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
-                    'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
-                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
-                );
-            }
-*/
 
             $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
@@ -230,51 +187,6 @@ class OrdersController extends BaseController
             $listReport = array();
 
             $list_orders_by_deliver_date = $this->getModel()->getOrdersClient($this->asingFilters(),$this->getPaginator(),$this->state_order);
-          //  $list_orders_by_deliver_date = $this->getModel()->getOrderList();
-
-            /*
-            for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
-
-                $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
-
-                $array_item_product = array();
-                $total_amount=0;
-                for ($i = 0; $i < count($items_order_list); ++$i) {
-
-                    $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                        'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-             'pendient_stock' => $items_order_list[$i]['pendient_stock']);
-
-                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
-
-                }
-
-                $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
-                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
-                    'order_state' => $list_orders_by_deliver_date[$j]['state'],
-                    'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
-                    'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
-                    'order_state_billing' => $list_orders_by_deliver_date[$j]['state_billing'],
-                    'order_state_delivery' => $list_orders_by_deliver_date[$j]['state_delivery'],
-                    'order_signed' => $list_orders_by_deliver_date[$j]['signed'],
-                    'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
-                    'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
-                    'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
-                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
-                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
-                    'amount_order' => $total_amount,
-                    'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
-                    'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
-                    'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
-                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
-                );
-            }
-*/
 
             $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
         }else{
@@ -301,7 +213,7 @@ class OrdersController extends BaseController
 
         $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
 
-        $next_date = date('d-m-Y', strtotime($order['delivery_date'].' +1 day'));
+        $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
 
         $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
             'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
@@ -329,11 +241,6 @@ class OrdersController extends BaseController
 
                     $resItem = $this->items_order->save($newItem);
 
-                    //LE DEJAMOS EL PRECIO POR SI SE DESCHEQUEA LA ORDEN Y SE VUELVE A ATRAS
-                    //$this->items_order->update($items_order_list[$i]['id'],array('price' => 0.0));
-
-                    //en el item actual se le pone reasigned quantity para que no se pueda tildar. ya que se va a facturar en otro pedido.
-
                     $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "true"));
 
                 }
@@ -360,13 +267,17 @@ class OrdersController extends BaseController
         // si es mayor a 0 es que hay productos sin cargar. Si es igual a 0 esta completa.
         $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
         if(count($items_order_list) >0){
-            $resp=array('fullOrder' => "false",'cont' => count($items_order_list));
+
+            return true;
+           // $resp=array('fullOrder' => "false",'cont' => count($items_order_list));
 
         }else{
-            $resp=array('fullOrder' => "true",'cont' => count($items_order_list));
+
+            return false;
+           // $resp=array('fullOrder' => "true",'cont' => count($items_order_list));
         }
 
-        $this->returnSuccess(200,$resp);
+       // $this->returnSuccess(200,$resp);
     }
 
     function changeStateOrder(){
@@ -386,10 +297,10 @@ class OrdersController extends BaseController
                 $this->getModel()->update($_GET['order_id'],array('state_prepare' => $_GET['state']));
                 if($_GET['state'] == "prepare"){
 
-                    if($_GET['new'] == "true"){
+                    if($this->isFullOrderCharged()){
+
                         $this->createNewOrderWithReasigneditems($_GET['order_id']);
                     }
-                     //   $this->deleteRemainingProducts($_GET['order_id']);
 
                     $this->getModel()->update($_GET['order_id'],array('tobilling' => "true"));
                 }else{
@@ -709,3 +620,92 @@ class OrdersController extends BaseController
         }
     }
 */
+//  $list_orders_by_deliver_date = $this->getModel()->getOrderList();
+
+/*
+for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
+
+    $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
+
+    $array_item_product = array();
+    $total_amount=0;
+    for ($i = 0; $i < count($items_order_list); ++$i) {
+
+        $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
+            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+ 'pendient_stock' => $items_order_list[$i]['pendient_stock']);
+
+        $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+
+    }
+
+    $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
+        'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
+        'order_state' => $list_orders_by_deliver_date[$j]['state'],
+        'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
+        'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
+        'order_state_billing' => $list_orders_by_deliver_date[$j]['state_billing'],
+        'order_state_delivery' => $list_orders_by_deliver_date[$j]['state_delivery'],
+        'order_signed' => $list_orders_by_deliver_date[$j]['signed'],
+        'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
+        'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
+        'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
+        'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
+        'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
+        'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
+        'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
+        'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
+        'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
+        'amount_order' => $total_amount,
+        'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
+        'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
+        'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
+        'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
+    );
+}
+*/
+
+/*
+            for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
+
+                $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
+
+                $array_item_product = array();
+                $total_amount=0;
+                for ($i = 0; $i < count($items_order_list); ++$i) {
+
+                    $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                        'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
+                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity']);
+
+                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+
+                }
+
+                $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
+                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
+                    'order_state' => $list_orders_by_deliver_date[$j]['state'],
+                    'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
+                    'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
+                    'order_state_billing' => $list_orders_by_deliver_date[$j]['state_billing'],
+                    'order_state_delivery' => $list_orders_by_deliver_date[$j]['state_delivery'],
+                    'order_signed' => $list_orders_by_deliver_date[$j]['signed'],
+                    'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
+                    'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
+                    'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
+                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
+                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
+                    'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
+                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
+                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
+                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,
+                    'amount_order' => $total_amount,
+                    'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
+                    'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
+                    'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
+                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
+                );
+            }
+*/
+

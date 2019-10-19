@@ -96,7 +96,7 @@ abstract class BaseModel
 
     function findAllItems($filters=array()){
         $conditions = join(' AND ',$filters);
-        $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY created ASC';
+        $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY billing DESC,created ASC';
         return $this->db->fetch_all($query);
     }
 
