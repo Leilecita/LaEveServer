@@ -207,10 +207,25 @@ class OrdersController extends BaseController
         }
     }
 
+    function postOrderw(){
+
+        $next_date = date('Y-m-d', strtotime("1999-10-08".' +1 day'));
+
+        $newOrder =array('user_id'=>1,'client_id' => 2,'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
+            'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
+            'total_amount' => 0.0, 'delivery_date'=> $next_date,'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => "",
+            'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0.0,'order_reasigned_id' => -1);
+
+        unset($newOrder['id']);
+        $res=$this->model->save($newOrder);
+
+        $this->returnSuccess(200,$this->model->findById($res));
+    }
+
+
     function createNewOrderWithReasigneditems($order_id){
 
         $order=$this->getModel()->findById($order_id);
-
 
         $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
 
@@ -218,7 +233,7 @@ class OrdersController extends BaseController
 
         $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
             'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
-            'total_amount' => 0.0, 'delivery_date'=> $next_date,'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
+            'total_amount' => 0.0, 'delivery_date'=> $next_date,'loaded_by'=> $order['loaded_by'],'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
             'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0.0,'order_reasigned_id' => -1);
 
 
@@ -226,14 +241,12 @@ class OrdersController extends BaseController
         $res=$this->model->save($newOrder);
 
         if($res>= 0){
-
             //me guardo el id de la orden a la que van a ser reasignados los productos.
 
             $this->getModel()->update($order['id'],array('order_reasigned_id' => $res));
 
             for ($i = 0; $i < count($items_order_list); ++$i) {
                 if($items_order_list[$i]['loaded'] == "false"){
-
                     //aca hay que duplicar este item a la nueva orden , porque sino se pirde.
 
                     $newItem=$items_order_list[$i];
@@ -250,6 +263,8 @@ class OrdersController extends BaseController
             }
         }
     }
+
+
 
     function deleteOrderWithReasignedItems($order_id){
 
@@ -273,21 +288,6 @@ class OrdersController extends BaseController
         }else{
             return "falta";
         }
-
-
-
-        // si es mayor a 0 es que hay productos sin cargar. Si es igual a 0 esta completa.
-       /* $items_order_list = $this->items_order->findAllItemsCheckComplete(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
-        if(count($items_order_list) >0){
-
-            return "false";
-
-        }else{
-
-            return "true";
-        }*/
-
-       // $this->returnSuccess(200,$resp);
     }
 
     function changeStateOrder(){
