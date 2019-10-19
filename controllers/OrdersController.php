@@ -224,9 +224,7 @@ class OrdersController extends BaseController
 
 
         unset($newOrder['id']);
-        $res=$this->model->save(json_encode($newOrder));
-
-        error_log($res);
+        $res=$this->model->save($newOrder);
 
 
         if($res>= 0){
