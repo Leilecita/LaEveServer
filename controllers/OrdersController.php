@@ -223,9 +223,7 @@ class OrdersController extends BaseController
             'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0,'order_reasigned_id' => -1);
 
 
-        unset($newOrder['id']);
         $res=$this->model->save($newOrder);
-
 
         if($res>= 0){
 
