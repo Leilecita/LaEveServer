@@ -262,20 +262,30 @@ class OrdersController extends BaseController
         }
     }
 
-    function isFullOrderCharged(){
+     function isFullOrderCharged(){
+
+        $data="";
+        $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
+
+        if($res['total']==0){
+            $data= "true";
+        }else{
+             $data="false";
+
+        }
+
+        $this->returnSuccess(200,$data);
 
         // si es mayor a 0 es que hay productos sin cargar. Si es igual a 0 esta completa.
-        $items_order_list = $this->items_order->findAllItemsCheckComplete(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
+       /* $items_order_list = $this->items_order->findAllItemsCheckComplete(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
         if(count($items_order_list) >0){
 
-            return true;
-           // $resp=array('fullOrder' => "false",'cont' => count($items_order_list));
+            return "false";
 
         }else{
 
-            return false;
-           // $resp=array('fullOrder' => "true",'cont' => count($items_order_list));
-        }
+            return "true";
+        }*/
 
        // $this->returnSuccess(200,$resp);
     }

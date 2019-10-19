@@ -23,4 +23,16 @@ class ItemOrderModel extends BaseModel
         return $this->getDb()->fetch_all($query);
 
     }
+
+    function countItemsLoaded($loaded,$order_id){
+
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE loaded = ? AND order_id = ?',$loaded,$order_id);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+    }
 }
