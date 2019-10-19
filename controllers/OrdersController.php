@@ -229,13 +229,30 @@ class OrdersController extends BaseController
 
         $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
 
-        $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
-            'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
-            'total_amount' => 0.0, 'delivery_date'=> $next_date,'loaded_by'=> $order['loaded_by'],'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
-            'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0.0,'order_reasigned_id' => -1);
+        $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],
+            'state' => "",
+            'state_check' => "check",
+            'state_prepare' => "toprepare",
+            'state_billing' => "tobilling",
+            'state_delivery' => "todelivery",
+            'tocheck' => "true",
+            'toprepare' => "true",
+            'tobilling' => "false",
+            'todelivery' => "false",
+            'observation' => "",
+            'total_amount' => 0.0,
+            'delivery_date'=> $next_date,
+            'loaded_by'=> $order['loaded_by'],
+            'delivery_by' => "",
+            'prepared_by' => "",
+            'assigned_zone' => "",
+            'loaded_in' => $order['loaded_in'],
+            'signed' => "false",
+            'paid_out' => "false",
+            'paid_amount' => 0.0,
+            'order_reasigned_id' => -1);
 
 
-        unset($newOrder['id']);
         $res=$this->model->save($newOrder);
 
         if($res>= 0){
@@ -263,7 +280,6 @@ class OrdersController extends BaseController
     }
 
 
-
     function deleteOrderWithReasignedItems($order_id){
 
         $order=$this->model->findById($order_id);
@@ -274,7 +290,6 @@ class OrdersController extends BaseController
             $this->model->delete($order['order_reasigned_id']);
 
             $this->model->update($order_id,array('order_reasigned_id' => -1));
-
         }
     }
 
