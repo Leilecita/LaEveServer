@@ -217,7 +217,7 @@ class OrdersController extends BaseController
 
         $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
             'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
-            'total_amount' => 0, 'delivery_date'=> $next_date,'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
+            'total_amount' => 0, 'delivery_date'=> "1999-01-01",'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => $order['loaded_in'],
             'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0,'order_reasigned_id' => -1);
 
         $res=$this->getModel()->save($newOrder);
