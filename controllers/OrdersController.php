@@ -20,7 +20,7 @@ class OrdersController extends BaseController
 
     function __construct(){
         parent::__construct();
-        $this->model = new OrderMOdel();
+        $this->model = new OrderModel();
         $this->items_order= new ItemOrderModel();
         $this->clients= new ClientModel();
 
