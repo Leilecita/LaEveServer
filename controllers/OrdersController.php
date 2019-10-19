@@ -207,7 +207,6 @@ class OrdersController extends BaseController
         }
     }
 
-
     function createNewOrderWithReasigneditems($order_id){
 
         $order=$this->getModel()->findById($order_id);
@@ -216,9 +215,6 @@ class OrdersController extends BaseController
         $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
 
         $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
-
-        $newOrder=$order;
-
 
         $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],'state' => "", 'state_check' => "check",'state_prepare' => "toprepare",'state_billing' => "tobilling",
             'state_delivery' => "todelivery",'tocheck' => "true",'toprepare' => "true",'tobilling' => "false",'todelivery' => "false",'observation' => "",
