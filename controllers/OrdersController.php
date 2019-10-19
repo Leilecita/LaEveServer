@@ -207,6 +207,7 @@ class OrdersController extends BaseController
         }
     }
 
+
     function createNewOrderWithReasigneditems($order_id){
 
         $order=$this->getModel()->findById($order_id);
@@ -223,9 +224,10 @@ class OrdersController extends BaseController
 
 
         unset($newOrder['id']);
-        $res=$this->model->save($newOrder);
+        $res=$this->model->save(json_encode($newOrder));
 
         error_log($res);
+
 
         if($res>= 0){
 
