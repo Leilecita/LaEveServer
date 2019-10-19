@@ -265,7 +265,7 @@ class OrdersController extends BaseController
     function isFullOrderCharged(){
 
         // si es mayor a 0 es que hay productos sin cargar. Si es igual a 0 esta completa.
-        $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
+        $items_order_list = $this->items_order->findAllItemsCheckComplete(array('order_id = "' .$_GET['order_id'].'"', 'loaded = "false"'));
         if(count($items_order_list) >0){
 
             return true;
