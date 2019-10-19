@@ -58,7 +58,6 @@ class ItemsOrderController extends BaseController
                 'preci5' => $item_order['preci5'],'loaded' => "false",'reasigned_quantity' => 'true','pendient_stock' => 'false','billing' => $item_order['billing']);
 
             $res = $this->model->save($newItemOrder);
-
         }
     }
 
