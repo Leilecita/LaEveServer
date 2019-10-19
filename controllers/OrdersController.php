@@ -216,7 +216,6 @@ class OrdersController extends BaseController
             'total_amount' => 0.0, 'delivery_date'=> $next_date,'loaded_by'=> "",'delivery_by' => "",'assigned_zone' => "", 'loaded_in' => "",
             'signed' => "false", 'paid_out' => "false", 'paid_amount' => 0.0,'order_reasigned_id' => -1);
 
-        unset($newOrder['id']);
         $res=$this->model->save($newOrder);
 
         $this->returnSuccess(200,$this->model->findById($res));
