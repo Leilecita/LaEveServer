@@ -68,6 +68,8 @@ class WorkersController extends BaseController
 
                 $array_item_product_rem = array();
 
+                $array_item_product_add = array();
+
                 $total_amount=0;
                 for ($i = 0; $i < count($items_order_list); ++$i) {
 
@@ -77,14 +79,24 @@ class WorkersController extends BaseController
                             'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
-                    }else{
+
+                    }else if($items_order_list[$i]['billing'] == "factura" ){
                         $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }else{
+
+                        $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                     }
 
 
-                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                    if($items_order_list[$i]['loaded'] == "true") {
+                        $total_amount = $total_amount + ($items_order_list[$i]['price'] * $items_order_list[$i]['quantity']);
+                    }
+
                 }
 
                 $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
@@ -102,7 +114,7 @@ class WorkersController extends BaseController
                     'client_dircli' => $client['dircli'],
                     'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                     'client_comcli' => $client['comcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
+                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
@@ -134,6 +146,7 @@ class WorkersController extends BaseController
                 $array_item_product = array();
 
                 $array_item_product_rem = array();
+                $array_item_product_add = array();
 
                 $total_amount=0;
                 for ($i = 0; $i < count($items_order_list); ++$i) {
@@ -143,13 +156,24 @@ class WorkersController extends BaseController
                             'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
-                    }else{
+
+                    }else if($items_order_list[$i]['billing'] == "factura"){
                         $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }else{
+
+                        $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                     }
 
-                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+
+                    if($items_order_list[$i]['loaded'] == "true") {
+                        $total_amount = $total_amount + ($items_order_list[$i]['price'] * $items_order_list[$i]['quantity']);
+                    }
+
                 }
 
                 $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
@@ -167,7 +191,7 @@ class WorkersController extends BaseController
                     'client_dircli' => $client['dircli'],
                     'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                     'client_comcli' => $client['comcli'],
-                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
+                    'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],

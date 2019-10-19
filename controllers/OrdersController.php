@@ -6,7 +6,6 @@
  * Time: 15:24
  */
 
-
 require_once 'BaseController.php';
 require_once  __DIR__.'/../models/OrderModel.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
@@ -166,6 +165,8 @@ class OrdersController extends BaseController
 
             $array_item_product_rem = array();
 
+            $array_item_product_add = array();
+
             $total_amount=0;
             for ($i = 0; $i < count($items_order_list); ++$i) {
 
@@ -176,15 +177,22 @@ class OrdersController extends BaseController
                         'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                         'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
 
-                }else{
+                }else if($items_order_list[$i]['billing'] == "factura"){
                     $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                        'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
+                        'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                        'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                }else{
+                    $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
                         'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                         'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                         'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                 }
 
+                if($items_order_list[$i]['loaded'] == "true"){
 
-                $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                }
 
             }
 
@@ -204,7 +212,7 @@ class OrdersController extends BaseController
                 'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                 'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
                 'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
-                'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
+                'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                 'amount_order' => $total_amount,
                 'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                 'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
@@ -315,17 +323,16 @@ class OrdersController extends BaseController
 
                     $newItem=$items_order_list[$i];
                     $newItem['order_id']= $res;
-                    $newItem['reasigned_quantity']= "false";
+                    $newItem['reasigned_quantity']= "false"; // lo pongo en false para que se pueda cargar en la orden nueva
 
                     unset($newItem['id']);
 
                     $resItem = $this->items_order->save($newItem);
 
-                    // esto se hace para que no se facture.
-                    $this->items_order->update($items_order_list[$i]['id'],array('price' => 0.0));
+                    //LE DEJAMOS EL PRECIO POR SI SE DESCHEQUEA LA ORDEN Y SE VUELVE A ATRAS
+                    //$this->items_order->update($items_order_list[$i]['id'],array('price' => 0.0));
 
-                    // y si no se cargo y no se asigno reasigned quantity, se lo ponemos para que aparezca en rojo , como q no se factura
-                    //no se le cmbio la cantidad pero , se pasa para el pedido del dia siguiente porque no habia .
+                    //en el item actual se le pone reasigned quantity para que no se pueda tildar. ya que se va a facturar en otro pedido.
 
                     $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "true"));
 
@@ -381,9 +388,8 @@ class OrdersController extends BaseController
 
                     if($_GET['new'] == "true"){
                         $this->createNewOrderWithReasigneditems($_GET['order_id']);
-                    }else{
-                        $this->deleteRemainingProducts($_GET['order_id']);
                     }
+                     //   $this->deleteRemainingProducts($_GET['order_id']);
 
                     $this->getModel()->update($_GET['order_id'],array('tobilling' => "true"));
                 }else{
@@ -516,7 +522,12 @@ class OrdersController extends BaseController
             $total_amount=0;
             for ($i = 0; $i < count($items_order_list); ++$i) {
 
-                $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                if($items_order_list[$i]['loaded'] == "true"){
+                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                }
+
+               // $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+
             }
 
             return $total_amount;
@@ -539,6 +550,7 @@ class OrdersController extends BaseController
 
                 $array_item_product = array();
                 $array_item_product_rem = array();
+                $array_item_product_add = array();
                 $total_amount=0;
                 for ($i = 0; $i < count($items_order_list); ++$i) {
 
@@ -548,14 +560,21 @@ class OrdersController extends BaseController
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
 
-                    }else{
+                    }else if($items_order_list[$i]['billing'] == "factura"){
                         $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
+                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
+                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                    }else{
+                        $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                     }
 
+                    if($items_order_list[$i]['loaded'] == "true"){
+                        $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                    }
 
-                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                   // $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                 }
 
                 $listReport = array('order_created' =>$order['created'],
@@ -573,7 +592,7 @@ class OrdersController extends BaseController
                     'client_dircli' => $client['dircli'],
                     'client_loccli' => $order['assigned_zone'],
                     'client_comcli' => $client['comcli'],
-                    'delivery_date' => $order['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,
+                    'delivery_date' => $order['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $order['loaded_in'],
                     'loaded_by' => $order['loaded_by'],
