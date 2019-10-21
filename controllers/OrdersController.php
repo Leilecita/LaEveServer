@@ -77,14 +77,16 @@ class OrdersController extends BaseController
             }
         }
 
+        if(isset($_GET['zone']) && !empty($_GET['zone'])){
+            //$filters[] = 'loccli like "%'.$_GET['zone'].'%"';
+            $filters[] = 'assigned_zone = "' . $_GET['zone'] . '"';
+        }
+
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
             $filters[] = 'comcli like "%'.$_GET['query'].'%"';
         }
 
-        if(isset($_GET['zone']) && !empty($_GET['zone'])){
-            $filters[] = 'loccli like "%'.$_GET['zone'].'%"';
-        }
 
         return $filters;
     }
@@ -97,7 +99,9 @@ class OrdersController extends BaseController
         }
 
         if(isset($_GET['zone']) && !empty($_GET['zone'])){
-            $filters[] = 'loccli like "%'.$_GET['zone'].'%"';
+            //$filters[] = 'loccli like "%'.$_GET['zone'].'%"';
+
+            $filters[] = 'assigned_zone = "' . $_GET['zone'] . '"';
         }
 
         return $filters;
@@ -231,7 +235,7 @@ class OrdersController extends BaseController
             'loaded_by'=> $order['loaded_by'],
             'delivery_by' => "",
             'prepared_by' => "",
-            'assigned_zone' => "",
+            'assigned_zone' => $order['assigned_zone'],
             'loaded_in' => $order['loaded_in'],
             'signed' => "false",
             'paid_out' => "false",
