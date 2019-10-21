@@ -44,14 +44,14 @@ class WorkersController extends BaseController
         $filters = array();
 
         $filters[] = 'loaded_by = "' . $worker_name . '"';
-        $filters[] = 'loaded_in = "' . $loaded_in . '"';
+        if($loaded_in != ""){
+            $filters[] = 'loaded_in = "' . $loaded_in . '"';
+        }
         $filters[] = 'state_delivery = "delivery"';
-       // $filters[] = 'loaded_in != "Mostrador"';
         $filters[] = 'delivery_date = "' .$delivery_date.'"';
 
         return $filters;
     }
-
 
     function getWorkerLoadLiquidationList(){
 
@@ -79,20 +79,16 @@ class WorkersController extends BaseController
                             'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
-
                     }else if($items_order_list[$i]['billing'] == "factura" ){
                         $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                     }else{
-
                         $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
                             'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
                             'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
                             'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
                     }
-
-
                     if($items_order_list[$i]['loaded'] == "true") {
                         $total_amount = $total_amount + ($items_order_list[$i]['price'] * $items_order_list[$i]['quantity']);
                     }
@@ -234,12 +230,17 @@ class WorkersController extends BaseController
 
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
 
-            $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery",$_GET['loaded_in']);
+           // $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery",$_GET['loaded_in']);
+
+            $loaded_orders_m= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Mostrador");
+            $loaded_orders_v= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Vendedor");
+            $loaded_orders_w= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Whatsapp");
+            $loaded_orders_t= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Telefono");
 
             $total_load_orders= $this->orders->countTotalLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
 
-            $reportWorkerLiquidation=array('total_amount' => 0.0,'total_paid_amount' => 0.0,
-                'quantity_delivery_orders' => 0,'quantity_delivery_pendients' => 0, 'load_orders_quantity' => $loaded_orders
+            $reportWorkerLiquidation=array('order_w' => $loaded_orders_w,'order_m' => $loaded_orders_m,
+                'order_t' => $loaded_orders_t,'order_v' => $loaded_orders_v, 'total_orders' => $total_load_orders
             );
 
             $this->returnSuccess(200, $reportWorkerLiquidation);

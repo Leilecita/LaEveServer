@@ -54,8 +54,6 @@ abstract class BaseModel
     }
 
 
-
-
     function getSpinner($type){
         $query = 'SELECT DISTINCT '.$type.' FROM '.$this->tableName;
         return $this->db->fetch_all($query);
