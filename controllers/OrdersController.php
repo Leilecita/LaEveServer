@@ -84,7 +84,8 @@ class OrdersController extends BaseController
 
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
-            $filters[] = 'comcli like "%'.$_GET['query'].'%"';
+           // $filters[] = 'comcli like "%'.$_GET['query'].'%"';
+            $filters[] = '(comcli like "%'.$_GET['query'].'%" OR nomcli like "%'.$_GET['query'].'%")';
         }
 
 
@@ -95,7 +96,8 @@ class OrdersController extends BaseController
         $filters=array();
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
-            $filters[] = 'comcli like "%'.$_GET['query'].'%"';
+            //$filters[] = 'comcli like "%'.$_GET['query'].'%"';
+            $filters[] = '(comcli like "%'.$_GET['query'].'%" OR nomcli like "%'.$_GET['query'].'%")';
         }
 
         if(isset($_GET['zone']) && !empty($_GET['zone'])){
