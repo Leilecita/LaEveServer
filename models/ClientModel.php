@@ -14,4 +14,11 @@ class ClientModel extends BaseModel
         $this->tableName = 'clients';
     }
 
+
+    function deleteAll(){
+        //$query='DELETE FROM '.$this->tableName;
+        $query='TRUNCATE TABLE '.$this->tableName;
+        return $this->getDb()->fetch_row($query);
+    }
+
 }
