@@ -14,7 +14,8 @@ $countError=0;
 if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     $clientModel = new ClientModel();
 
-    $columnasCli = array("id","codcli","nomcli","comcli","dircli","telcli","loccli","celcli");
+    $columnasCli = array("id"=>null,"codcli"=>0,"nomcli"=> '',"comcli"=> '',"dircli"=> '',"telcli"=> '',"loccli"=> '',"celcli"=>'');
+
 
     $table = new Table($_FILES["clientes"]["tmp_name"]);
 
@@ -23,12 +24,17 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     while ($record = $table->nextRecord()) {
         $s = [];
         foreach ($columns as $column) {
-            if(in_array($column->name,$columnasCli)) {
+            if(array_key_exists($column->name,$columnasProd)){
+           // if(in_array($column->name,$columnasCli)) {
                 $s[$column->name] = iconv('CP1252', 'UTF-8', $record->forceGetString($column->name));
                 // echo "Guardo ".$s[$column->name].'<br/>';
-                if ($s[$column->name] == null) {
-                    $s[$column->name] = '';
+
+                if ($s[$column->name] == null || $s[$column->name] == '') {
+                    $s[$column->name] = $columnasCli[$column->name];
                 }
+              /*  if ($s[$column->name] == null) {
+                    $s[$column->name] = '';
+                }*/
             }
         }
         try {
