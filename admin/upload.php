@@ -45,7 +45,7 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
             $countOk++;
         }catch(Exception $e){
 
-            var_dump('Exceltion'.$e->getMessage());
+            error_log('Exception'.$e->getMessage());
 
             error_log('Error: '.print_r($s,true));
 
