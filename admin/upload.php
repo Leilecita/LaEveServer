@@ -24,7 +24,7 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     while ($record = $table->nextRecord()) {
         $s = [];
         foreach ($columns as $column) {
-            if(array_key_exists($column->name,$columnasProd)){
+            if(array_key_exists($column->name,$columnasCli)){
            // if(in_array($column->name,$columnasCli)) {
                 $s[$column->name] = iconv('CP1252', 'UTF-8', $record->forceGetString($column->name));
                 // echo "Guardo ".$s[$column->name].'<br/>';
