@@ -14,6 +14,8 @@ $countError=0;
 if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     $clientModel = new ClientModel();
 
+    $columnasProd = array("id","nomcli","comcli","dircli","telcli","loccli","celcli");
+
 
     $table = new Table($_FILES["clientes"]["tmp_name"]);
 
@@ -22,10 +24,12 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     while ($record = $table->nextRecord()) {
         $s = [];
         foreach ($columns as $column) {
-            $s[$column->name] = iconv('CP1252', 'UTF-8',$record->forceGetString($column->name));
-            echo "Guardo ".$s[$column->name].'<br/>';
-            if($s[$column->name] == null){
-                $s[$column->name] = '';
+            if(in_array($column->name,$columnasProd)) {
+                $s[$column->name] = iconv('CP1252', 'UTF-8', $record->forceGetString($column->name));
+                // echo "Guardo ".$s[$column->name].'<br/>';
+                if ($s[$column->name] == null) {
+                    $s[$column->name] = '';
+                }
             }
         }
         try {
@@ -52,7 +56,8 @@ $countError=0;
 if (isset($_FILES["productos"]) && !$_FILES["productos"]["error"]){
     $productModel = new ProductModel();
 
-    $columnasProd = array("id","codart","desart","codbar","ubicac","oferta","cosart","descu1","descu2","descu3","descu4","cosfin","gasfle","gastos","cosrea","poriva","marge1","marge2","marge3","marge4","marge5","preci1","preci2","preci3","preci4","preci5","preci6","stocka","stomin","conten","desabr","moduni","modfin","codrub","codsub","codpro","codmar","fecalt","fecpre","marcas","concom","tipcos","consto","fecref","moddes","presen","mensaj","codbar2","codbar3","exeiva");
+  //  $columnasProd = array("id","codart","desart","codbar","ubicac","oferta","cosart","descu1","descu2","descu3","descu4","cosfin","gasfle","gastos","cosrea","poriva","marge1","marge2","marge3","marge4","marge5","preci1","preci2","preci3","preci4","preci5","preci6","stocka","stomin","conten","desabr","moduni","modfin","codrub","codsub","codpro","codmar","fecalt","fecpre","marcas","concom","tipcos","consto","fecref","moddes","presen","mensaj","codbar2","codbar3","exeiva");
+    $columnasProd = array("id","codart","desart","preci1","preci2","preci3","preci4","preci5");
 
     $table = new Table($_FILES["productos"]["tmp_name"]);
 
