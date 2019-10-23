@@ -116,12 +116,12 @@ class ClientsController extends BaseController
 
     public function assignFilter(){
         $res=$this->getModel()->findAllByNameCli($this->getFiltersFirstLetter(),$this->getPaginator());
-        $resContainCom=$this->getModel()->findAllByNameCli($this->getFiltersContainCom(),$this->getPaginator());
         $resContain=$this->getModel()->findAllByNameCli($this->getFiltersContain(),$this->getPaginator());
+        $resContainCom=$this->getModel()->findAllByNameCli($this->getFiltersContainCom(),$this->getPaginator());
+
         $resCom=$this->getModel()->findAllByNameCli($this->getFiltersFirstLetterCom(),$this->getPaginator());
 
-        return $res+$resCom+$resContainCom+$resContain;
+        return $res+$resContain+$resCom+$resContainCom;
     }
-
 
 }

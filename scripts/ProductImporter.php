@@ -22,6 +22,7 @@ while ($record = $table->nextRecord()) {
     $s = [];
     foreach ($columns as $column) {
         $s[$column->name] = iconv('CP1252', 'UTF-8',$record->forceGetString($column->name));
+        echo 'colum: '.print_r($s[$column->name],true);
         if($s[$column->name] == null){
             $s[$column->name] = '';
         }
