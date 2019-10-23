@@ -16,7 +16,6 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
 
     $columnasCli = array("id"=>null,"codcli"=>0,"nomcli"=> '',"comcli"=> '',"dircli"=> '',"telcli"=> '',"loccli"=> '',"celcli"=>'');
 
-
     $table = new Table($_FILES["clientes"]["tmp_name"]);
 
     $columns = $table->getColumns();
