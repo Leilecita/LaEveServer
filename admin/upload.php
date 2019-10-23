@@ -14,8 +14,7 @@ $countError=0;
 if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     $clientModel = new ClientModel();
 
-    $columnasProd = array("id","nomcli","comcli","dircli","telcli","loccli","celcli");
-
+    $columnasCli = array("id","codcli","nomcli","comcli","dircli","telcli","loccli","celcli");
 
     $table = new Table($_FILES["clientes"]["tmp_name"]);
 
@@ -24,7 +23,7 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     while ($record = $table->nextRecord()) {
         $s = [];
         foreach ($columns as $column) {
-            if(in_array($column->name,$columnasProd)) {
+            if(in_array($column->name,$columnasCli)) {
                 $s[$column->name] = iconv('CP1252', 'UTF-8', $record->forceGetString($column->name));
                 // echo "Guardo ".$s[$column->name].'<br/>';
                 if ($s[$column->name] == null) {
@@ -35,17 +34,24 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
         try {
             $s['id'] = $s['codcli'];
             unset($s['codcli']);
+
             $clientModel->save($s);
-       //     echo "Guardo ".$s['id'].'<br/>';
 
             $countOk++;
         }catch(Exception $e){
+
+           // var_dump('Exceltion'.$e->getMessage());
+
             error_log('Error: '.print_r($s,true));
+
+           // echo "Error ".$e->getMessage().'<br/>';
+
             $countError++;
         }
 
     }
     echo " Se crearon $countOk clientes y fallaron $countError <br/>";
+    //pone fallaron porque ya existe su id (que es el codcli) para que se creen todos hay que vaciar la base de datos
 
 }else{
     echo "error al procesar el archivo clientes<br/>";
@@ -87,6 +93,7 @@ if (isset($_FILES["productos"]) && !$_FILES["productos"]["error"]){
         }
     }
     echo " Se crearon $countOk productos y fallaron $countError <br/>";
+    //pone fallaron porque ya existe su id (que es el codcli) para que se creen todos hay que vaciar la base de datos
 
 }else{
     echo "error al procesar el archivo productos<br/>";
