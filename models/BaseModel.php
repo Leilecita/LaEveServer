@@ -175,6 +175,7 @@ abstract class BaseModel
         return ($this->db->delete($this->tableName, ['id' => $id]) == 1);
     }
 
+
     function deleteByOrderId($order_id){
         return ($this->db->delete($this->tableName, ['order_id' => $order_id]) == 1);
     }

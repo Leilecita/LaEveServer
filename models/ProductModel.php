@@ -14,4 +14,8 @@ class ProductModel extends BaseModel
         $this->tableName = 'products';
     }
 
+    function deleteAll(){
+        $query='DELETE FROM '.$this->tableName;
+        return $this->getDb()->fetch_row($query);
+    }
 }

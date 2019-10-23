@@ -14,6 +14,10 @@ $countError=0;
 if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     $clientModel = new ClientModel();
 
+
+    //NO PUEDO VACIAR LA TABLA PORQUE YA LOS CLIENTES ESTAN ASOCIADOS A UNA ORDEN, LOS TENGO QUE ACTUALIZAR
+
+
     $columnasCli = array("id"=>null,"codcli"=>0,"nomcli"=> '',"comcli"=> '',"dircli"=> '',"telcli"=> '',"loccli"=> '',"celcli"=>'');
 
     $table = new Table($_FILES["clientes"]["tmp_name"]);
@@ -65,7 +69,13 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
 $countOk=0;
 $countError=0;
 if (isset($_FILES["productos"]) && !$_FILES["productos"]["error"]){
+
     $productModel = new ProductModel();
+
+    //TENGO QUE VACIAR LA TABLA, PORQUE YA LOS PRODUCTO ESTAN COPIADOS A ITEM_ORDER ENTONCES LOS ANTERIORES NO ME SIRVEN MAS O LA PUEDO UPDETEAR PERO CLIENTE NO PUEDO
+    //PORQUE ESTAN ASOCIADOS A UNA ORDEN
+
+    $productModel->deleteAll();
 
     //  $columnasProd = array("id","codart","desart","codbar","ubicac","oferta","cosart","descu1","descu2","descu3","descu4","cosfin","gasfle","gastos","cosrea","poriva","marge1","marge2","marge3","marge4","marge5","preci1","preci2","preci3","preci4","preci5","preci6","stocka","stomin","conten","desabr","moduni","modfin","codrub","codsub","codpro","codmar","fecalt","fecpre","marcas","concom","tipcos","consto","fecref","moddes","presen","mensaj","codbar2","codbar3","exeiva");
     $columnasProd = array("id"=>null,"codart"=>0,"desart"=>'',"preci1"=>0,"preci2"=>0,"preci3"=>0,"preci4"=>0,"preci5"=>0);
@@ -86,6 +96,7 @@ if (isset($_FILES["productos"]) && !$_FILES["productos"]["error"]){
             }
         }
         try {
+
             $productModel->save($s);
             //echo "Guardo " . $s['id'] . '<br/>';
 
