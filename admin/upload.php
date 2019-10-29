@@ -64,6 +64,8 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
 
     //puede que falle por otra cosa, prestar atencion
 
+
+
 }else{
     echo "error al procesar el archivo clientes<br/>";
 }

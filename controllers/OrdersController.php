@@ -49,8 +49,8 @@ class OrdersController extends BaseController
         $filters=array();
 
         if(isset($_GET['delivery_date'])) {
-            //$filters[] = 'delivery_date = "' . $_GET['delivery_date'] . '"';
-            $filters[] = 'delivery_date = "' .$this->changeFormatDate($_GET['delivery_date']). '"';
+            $filters[] = 'delivery_date = "' . $_GET['delivery_date'] . '"';
+            //$filters[] = 'delivery_date = "' .$this->changeFormatDate($_GET['delivery_date']). '"';
         }
 
         if(isset($_GET['state'])){
@@ -290,6 +290,31 @@ class OrdersController extends BaseController
             $this->model->delete($order['order_reasigned_id']);
 
             $this->model->update($order_id,array('order_reasigned_id' => -1));
+
+
+            $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
+            for ($i = 0; $i < count($items_order_list); ++$i) {
+                if($items_order_list[$i]['reasigned_quantity'] == "true"){
+
+                    $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "false"));
+
+                }
+            }
+        }
+
+
+    }
+
+    function checkFullOrder(){
+        $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
+        if($res == 0){
+            $resp=array('fullOrder'=>"completa",'cant' => $res);
+            $this->returnSuccess(200,$resp);
+
+        }else{
+
+            $resp2=array('fullOrder'=>"falta",'cant' => $res);
+            $this->returnSuccess(200,$resp2);
         }
     }
 
