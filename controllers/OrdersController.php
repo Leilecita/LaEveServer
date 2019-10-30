@@ -496,7 +496,7 @@ class OrdersController extends BaseController
         }
     }
 
-//esta se usaba para la pantalla completa de la orden
+    //se usa para actualizar la orden
     function getReportByOrderId(){
         if(isset($_GET['order_id'])){
 
@@ -564,8 +564,6 @@ class OrdersController extends BaseController
             }
         }
     }
-
-
 }
 
 
