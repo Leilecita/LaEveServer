@@ -14,4 +14,10 @@ class WorkerModel extends BaseModel
         $this->tableName = 'workers';
     }
 
+    function findAllWorkers($filters=array()){
+        $conditions = join(' AND ',$filters);
+        $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY created DESC';
+        return $this->getDb()->fetch_all($query);
+    }
+
 }

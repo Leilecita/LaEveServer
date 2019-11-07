@@ -27,6 +27,23 @@ class WorkersController extends BaseController
         $this->clients=new ClientModel();
     }
 
+    function getWorkersBy(){
+
+        $res=array();
+
+        if($_GET['type'] == "load"){
+            $res=$this->model->findAllWorkers(array('load_worker = "true"'));
+        }else if($_GET['type'] == "prepare"){
+            $res=$this->model->findAllWorkers(array('prepare_worker = "true"'));
+        }else if($_GET['type'] == "delivery"){
+            $res=$this->model->findAllWorkers(array('delivery_worker = "true"'));
+        }
+
+
+        $this->returnSuccess(200,$res);
+
+    }
+
 
     public function filterDeliveryWorkers($worker_name,$delivery_date)
     {

@@ -114,14 +114,29 @@ class ClientsController extends BaseController
         return $filters;
     }
 
-    public function assignFilter(){
-        $res=$this->getModel()->findAllByNameCli($this->getFiltersFirstLetter(),$this->getPaginator());
+
+    public function miniFilter(){
+        $filters = parent::getFilters();
+
+        if(isset($_GET['query']) && !empty($_GET['query'])){
+            $filters[] = '(comcli like "'.$_GET['query'].'%" OR nomcli like "'.$_GET['query'].'%")';
+        }
+
+        return $filters;
+    }
+
+
+     public function assignFilter(){
+       $res= $this->getModel()->findAllByNameCli($this->miniFilter(),$this->getPaginator());
+
+        return $res;
+        /*$res=$this->getModel()->findAllByNameCli($this->getFiltersFirstLetter(),$this->getPaginator());
         $resContain=$this->getModel()->findAllByNameCli($this->getFiltersContain(),$this->getPaginator());
         $resContainCom=$this->getModel()->findAllByNameCli($this->getFiltersContainCom(),$this->getPaginator());
 
         $resCom=$this->getModel()->findAllByNameCli($this->getFiltersFirstLetterCom(),$this->getPaginator());
 
-        return $res+$resContain+$resCom+$resContainCom;
+        return $res+$resContain+$resCom+$resContainCom;*/
     }
 
 }
