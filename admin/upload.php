@@ -5,6 +5,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__.'/../models/ClientModel.php';
 require_once __DIR__.'/../models/ProductModel.php';
+require_once __DIR__.'/../models/FileModel.php';
 
 use XBase\Table;
 
@@ -13,6 +14,8 @@ $countOk=0;
 $countError=0;
 if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
     $clientModel = new ClientModel();
+
+    $fileModel = new FileModel();
 
     $clientModel->deleteAll();  //se borran los clientes
 
@@ -60,6 +63,11 @@ if (isset($_FILES["clientes"]) && !$_FILES["clientes"]["error"]){
 
     }
     echo " Se crearon $countOk clientes y fallaron $countError <br/>";
+
+    $newFile=array('name' => "clientes", 'ok'=> $countOk, 'failed' => $countError);
+
+    $fileModel->save($newFile);
+
     //pone fallaron porque ya existe su id (que es el codcli) para que se creen todos hay que vaciar la base de datos
 
     //puede que falle por otra cosa, prestar atencion
@@ -110,6 +118,10 @@ if (isset($_FILES["productos"]) && !$_FILES["productos"]["error"]){
         }
     }
     echo " Se crearon $countOk productos y fallaron $countError <br/>";
+
+    $newFile=array('name' => "productos", 'ok'=> $countOk, 'failed' => $countError);
+
+    $fileModel->save($newFile);
     //pone fallaron porque ya existe su id (que es el codcli) para que se creen todos hay que vaciar la base de datos
 
 }else{
