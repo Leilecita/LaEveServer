@@ -24,8 +24,8 @@ class FilesController extends BaseController
         $resClients=$this->model->findFilesByType(array('name = "clientes"'));
         $resProducts=$this->model->findFilesByType(array('name = "productos"'));
 
-        $client=new FileModel();
-        $product=new FileModel();
+        $client=array('name' => "", 'ok' => 1, 'failed' => 1);
+        $product=array('name' => "", 'ok' => 1, 'failed' => 1);
 
         if(count($resClients)>0){
             $client=$resClients[0];
