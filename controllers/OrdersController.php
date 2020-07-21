@@ -179,7 +179,8 @@ class OrdersController extends BaseController
                 'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
                 'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
                 'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
-                'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
+                'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
+                'assigned_zone' => $list_orders_by_deliver_date[$j]['assigned_zone'],
                 'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
                 'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
                 'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
@@ -290,7 +291,6 @@ class OrdersController extends BaseController
             $this->model->delete($order['order_reasigned_id']);
 
             $this->model->update($order_id,array('order_reasigned_id' => -1));
-
 
             $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
             for ($i = 0; $i < count($items_order_list); ++$i) {
@@ -563,7 +563,8 @@ class OrdersController extends BaseController
                     'client_id' => $order['client_id'],
                     'client_nomcli' => $client['nomcli'],
                     'client_dircli' => $client['dircli'],
-                    'client_loccli' => $order['assigned_zone'],
+                    'client_loccli' => $client['loccli'],
+                    'assigned_zone' => $order['assigned_zone'],
                     'client_comcli' => $client['comcli'],
                     'delivery_date' => $order['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
