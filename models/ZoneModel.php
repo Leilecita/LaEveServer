@@ -15,4 +15,8 @@ class ZoneModel extends BaseModel
         $this->tableName = 'zones';
     }
 
+    function getZones(){
+        $query = 'SELECT DISTINCT name FROM zones ORDER BY name DESC ';
+        return $this->getDb()->fetch_all($query);
+    }
 }

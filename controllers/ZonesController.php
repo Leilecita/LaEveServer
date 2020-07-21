@@ -14,4 +14,8 @@ class ZonesController extends BaseController
         parent::__construct();
         $this->model = new ZoneModel();
     }
+
+    function getZones(){
+        $this->returnSuccess(200,$this->model->getZones());
+    }
 }

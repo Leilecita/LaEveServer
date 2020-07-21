@@ -20,9 +20,10 @@ class ClientsController extends BaseController
         $this->orders = new OrderModel();
     }
 
-    function getZones(){
-        $this->returnSuccess(200,$this->getModel()->getSpinner("loccli"));
 
+
+    function getLocalities(){
+        $this->returnSuccess(200,$this->model->getLocalities());
     }
 
     public function filterOrderByClientId($client_id)

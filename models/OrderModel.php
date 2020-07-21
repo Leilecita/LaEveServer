@@ -30,7 +30,8 @@ class OrderModel extends BaseModel
     function countDelivery($delivery_date,$state){
 
         //$response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ?',$delivery_date,$state);
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ? AND state_billing = ?',$delivery_date,$state,"billing");
+       // $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ? AND state_billing = ?',$delivery_date,$state,"billing");
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_delivery = ? AND state_billing = ?',$state,"billing");
 
         if($response['total']!=null){
             return $response['total'];
@@ -42,8 +43,8 @@ class OrderModel extends BaseModel
 
     function countPrepare($delivery_date,$state){
 
-        //$response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_prepare = ?',$delivery_date,$state);
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ?  AND state_prepare = ? AND state_check = ?',$delivery_date,$state,"check");
+      //  $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ?  AND state_prepare = ? AND state_check = ?',$delivery_date,$state,"check");
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_prepare = ? AND state_check = ?',$state,"check");
 
         if($response['total']!=null){
             return $response['total'];
@@ -67,7 +68,8 @@ class OrderModel extends BaseModel
 
     function countBilling($delivery_date,$state){
 
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_billing = ? AND state_prepare = ?',$delivery_date,$state,"prepare");
+       // $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_billing = ? AND state_prepare = ?',$delivery_date,$state,"prepare");
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_billing = ? AND state_prepare = ?',$state,"prepare");
 
         if($response['total']!=null){
             return $response['total'];
@@ -135,6 +137,16 @@ class OrderModel extends BaseModel
             return $response['total'];
         }
     }
+
+    function getOrdersClient($filters=array(),$paginator=array(),$order_state){
+
+        $conditions = join(' AND ',$filters);
+        //$query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC, o.created DESC, o.state_prepare DESC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC, o.delivery_date ASC, o.state_prepare DESC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        return $this->getDb()->fetch_all($query);
+
+    }
+
 
     function getAllOrders($filters=array(),$paginator=array()){
 

@@ -21,4 +21,12 @@ class ClientModel extends BaseModel
         return $this->getDb()->fetch_row($query);
     }
 
+    function getLocalities(){
+
+        $query = 'SELECT DISTINCT loccli FROM clients ORDER BY loccli DESC ';
+        return $this->getDb()->fetch_all($query);
+
+    }
+
+
 }
