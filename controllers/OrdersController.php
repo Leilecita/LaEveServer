@@ -222,6 +222,72 @@ class OrdersController extends BaseController
         }
     }
 
+
+
+
+    //nueva orden desde facturacion
+
+    function createNewOrderWithPendientsProducts(){
+
+        $order=$this->getModel()->findById($_GET['order_id']);
+
+        $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$_GET['order_id'].'"'));
+
+        $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
+
+        $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],
+            'state' => "",
+            'state_check' => "check",
+            'state_prepare' => "toprepare",
+            'state_billing' => "tobilling",
+            'state_delivery' => "todelivery",
+            'tocheck' => "true",
+            'toprepare' => "true",
+            'tobilling' => "false",
+            'todelivery' => "false",
+            'observation' => "",
+            'total_amount' => 0.0,
+            'delivery_date'=> $next_date,
+            'loaded_by'=> $order['loaded_by'],
+            'delivery_by' => "",
+            'prepared_by' => "",
+            'assigned_zone' => $order['assigned_zone'],
+            'loaded_in' => $order['loaded_in'],
+            'signed' => "false",
+            'paid_out' => "false",
+            'paid_amount' => 0.0,
+            'order_reasigned_id' => -1);
+
+
+        $res=$this->model->save($newOrder);
+
+        if($res>= 0){
+            //me guardo el id de la orden a la que van a ser reasignados los productos.
+
+            $this->getModel()->update($order['id'],array('order_reasigned_id' => $res));
+
+            for ($i = 0; $i < count($items_order_list); ++$i) {
+                if($items_order_list[$i]['loaded'] == "false"){
+                    //aca hay que duplicar este item a la nueva orden , porque sino se pirde.
+
+                    $newItem=$items_order_list[$i];
+                    $newItem['order_id']= $res;
+                    $newItem['reasigned_quantity']= "false"; // lo pongo en false para que se pueda cargar en la orden nueva
+
+                    unset($newItem['id']);
+
+                    $resItem = $this->items_order->save($newItem);
+
+                    $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "true"));
+
+                }
+            }
+
+            $this->returnSuccess(200,$res);
+        }
+    }
+    //
+
     function createNewOrderWithReasigneditems($order_id){
 
         $order=$this->getModel()->findById($order_id);
