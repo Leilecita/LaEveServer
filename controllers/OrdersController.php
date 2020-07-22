@@ -283,7 +283,9 @@ class OrdersController extends BaseController
                 }
             }
 
-            $this->returnSuccess(200,$res);
+            $resp=array('result' => "ok");
+
+            $this->returnSuccess(200,$resp);
         }
     }
     //
