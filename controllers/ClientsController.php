@@ -120,7 +120,7 @@ class ClientsController extends BaseController
         $filters = parent::getFilters();
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
-            $filters[] = '(comcli like "'.$_GET['query'].'%" OR nomcli like "'.$_GET['query'].'%")';
+            $filters[] = '(comcli like "%'.$_GET['query'].'%" OR nomcli like "%'.$_GET['query'].'%")';
         }
 
         return $filters;
