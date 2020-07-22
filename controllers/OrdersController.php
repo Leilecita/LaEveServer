@@ -347,13 +347,15 @@ class OrdersController extends BaseController
 
                     if($this->isFullOrderCharged() == "falta"){
 
-                        $this->createNewOrderWithReasigneditems($_GET['order_id']);
+                        //ya no se hace mas de aca
+
+                       // $this->createNewOrderWithReasigneditems($_GET['order_id']);
                     }
 
                     $this->getModel()->update($_GET['order_id'],array('tobilling' => "true"));
                 }else{
 
-                    $this->deleteOrderWithReasignedItems($_GET['order_id']);
+                   //$this->deleteOrderWithReasignedItems($_GET['order_id']);
 
                     $this->getModel()->update($_GET['order_id'],array('tobilling' => "false"));
                 }
