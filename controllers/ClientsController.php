@@ -21,7 +21,6 @@ class ClientsController extends BaseController
     }
 
 
-
     function getLocalities(){
         $this->returnSuccess(200,$this->model->getLocalities());
     }
@@ -36,7 +35,7 @@ class ClientsController extends BaseController
         return $filters;
     }
 
-
+/*
      public function checkExistingOrder(){
 
         if(isset($_GET['client_id'])){
@@ -50,7 +49,7 @@ class ClientsController extends BaseController
         }else{
             $this->returnError(400,"ENTITY NOT FOUND ");
         }
-    }
+    }*/
 
     function get(){
 
@@ -67,6 +66,61 @@ class ClientsController extends BaseController
            // $this->returnSuccess(200,$this->getModel()->findAllByNameCli($this->getFilters(),$this->getPaginator()));
             $this->returnSuccess(200,$this->assignFilter());
         }
+    }
+
+    function getClients(){
+        $clients=$this->model->findAllByNameCli($this->miniFilter(),$this->getPaginator());
+
+        $reportClient = array();
+        for ($i = 0; $i < count($clients); ++$i) {
+
+            $res = $this->model->countPendientOrdersByClientId($clients[$i]['id']);
+
+            $order =array('user_id'=>1,'client_id' => 1,
+                'state' => "",
+                'state_check' => "check",
+                'state_prepare' => "toprepare",
+                'state_billing' => "tobilling",
+                'state_delivery' => "todelivery",
+                'tocheck' => "true",
+                'toprepare' => "true",
+                'tobilling' => "false",
+                'todelivery' => "false",
+                'observation' => "",
+                'total_amount' => 0.0,
+                'delivery_date'=> "",
+                'loaded_by'=> "",
+                'delivery_by' => "",
+                'prepared_by' => "",
+                'assigned_zone' => "",
+                'loaded_in' => "",
+                'signed' => "false",
+                'paid_out' => "false",
+                'paid_amount' => 0.0,
+                'order_reasigned_id' => -1);
+
+
+            if($res > 0 ){
+                $orders= $this->orders->getTheFirstOfList($this->filterOrderByClientId($clients[$i]['id']));
+                if(empty($orders)){
+
+                }else{
+                    $order = $orders[0];
+                }
+
+            }
+
+            $reportClient[]=array('id' => $clients[$i]['id'],'nomcli' => $clients[$i]['nomcli'],
+                'comcli' => $clients[$i]['comcli'],'dircli' => $clients[$i]['dircli'],
+                'telcli' => $clients[$i]['telcli'],'loccli' => $clients[$i]['loccli'],
+                'celcli' => $clients[$i]['celcli'],
+
+                'pendient_orders' => $res,'order' => $order);
+        }
+
+        $this->returnSuccess(200,$reportClient);
+
+
     }
 
     public function getFilters()

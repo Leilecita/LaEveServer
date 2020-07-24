@@ -28,5 +28,22 @@ class ClientModel extends BaseModel
 
     }
 
+    function countPendientOrdersByClientId($client_id){
+        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM orders WHERE state_prepare = ? AND state_delivery = ? AND client_id = ?',"toprepare","todelivery",$client_id);
+
+        if($response['total']!=null){
+            return $response['total'];
+        }else{
+            $response['total']=0;
+            return $response['total'];
+        }
+
+    }
+
+    function findAllByNameCli($filters=array(),$paginator=array()){
+        $conditions = join(' AND ',$filters);
+        $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY nomcli ASC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        return $this->getDb()->fetch_all($query);
+    }
 
 }

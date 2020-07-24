@@ -157,4 +157,11 @@ class OrderModel extends BaseModel
         return $this->getDb()->fetch_all($query);
 
     }
+
+    function getTheFirstOfList($filters=array()){
+        $conditions = join(' AND ',$filters);
+        $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY created DESC';
+        return $this->getDb()->fetch_all($query);
+    }
+
 }
