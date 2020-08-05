@@ -37,6 +37,8 @@ class WorkersController extends BaseController
             $res=$this->model->findAllWorkers(array('prepare_worker = "true"'));
         }else if($_GET['type'] == "delivery"){
             $res=$this->model->findAllWorkers(array('delivery_worker = "true"'));
+        }else if($_GET['type'] == "bill"){
+            $res=$this->model->findAllWorkers(array('bill_worker = "true"'));
         }
 
 

@@ -160,11 +160,11 @@ class OrdersController extends BaseController
                     }else{
                         $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                     }
-
                 }
             }
 
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
+            $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
 
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
                 'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
@@ -188,8 +188,10 @@ class OrdersController extends BaseController
                 'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                 'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
                 'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
+                'billed_by' => $list_orders_by_deliver_date[$j]['billed_by'],
                 'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by'],
-                'products_cant' => $items_cant
+                'products_cant' => $items_cant,
+                'pendients_cant' => $pendient_items
             );
         }
 
@@ -251,13 +253,13 @@ class OrdersController extends BaseController
             'loaded_by'=> $order['loaded_by'],
             'delivery_by' => "",
             'prepared_by' => "",
+            'billed_by' => "",
             'assigned_zone' => $order['assigned_zone'],
             'loaded_in' => $order['loaded_in'],
             'signed' => "false",
             'paid_out' => "false",
             'paid_amount' => 0.0,
             'order_reasigned_id' => -1);
-
 
         $res=$this->model->save($newOrder);
 
@@ -314,6 +316,7 @@ class OrdersController extends BaseController
             'loaded_by'=> $order['loaded_by'],
             'delivery_by' => "",
             'prepared_by' => "",
+            'billed_by' => "",
             'assigned_zone' => $order['assigned_zone'],
             'loaded_in' => $order['loaded_in'],
             'signed' => "false",
@@ -443,8 +446,14 @@ class OrdersController extends BaseController
 
             $stateOrder=array('state'=>$_GET['state']);
 
+            //asignar empleado
+
             if(isset($_GET['prepared_by'])) {
                 $this->getModel()->update($_GET['order_id'], array('prepared_by' => $_GET['prepared_by']));
+            }
+
+            if(isset($_GET['billed_by'])) {
+                $this->getModel()->update($_GET['order_id'], array('billed_by' => $_GET['billed_by']));
             }
 
             if(isset($_GET['delivery_by'])) {
@@ -554,11 +563,7 @@ class OrdersController extends BaseController
                 if($items_order_list[$i]['loaded'] == "true"){
                     $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                 }
-
-               // $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
-
             }
-
             return $total_amount;
         }else{
 
@@ -619,6 +624,7 @@ class OrdersController extends BaseController
                 }
 
                 $items_cant = $this->items_order->countItemsByOrder($_GET['order_id']);
+                $pendient_items = $this->items_order->countPendientItems("false" ,$_GET['order_id']);
 
                 $listReport = array('order_created' =>$order['created'],
                     'order_obs' => $order['observation'],'order_id' => $order['id'],
@@ -641,8 +647,10 @@ class OrdersController extends BaseController
                     'loaded_in' => $order['loaded_in'],
                     'loaded_by' => $order['loaded_by'],
                     'prepared_by' => $order['prepared_by'],
+                    'billed_by' => $order['billed_by'],
                     'delivery_by' => $order['delivery_by'],
-                    'products_cant' => $items_cant);
+                    'products_cant' => $items_cant,
+                    'pendients_cant' => $pendient_items);
 
                 $this->returnSuccess(200, $listReport);
             }else{
