@@ -30,10 +30,30 @@ class ItemsOrderController extends BaseController
         return $filters;
     }
 
+    function getItemsByOrderId(){
+
+        $itemsRem=$this->getModel()->findAllItems($this->getFiltersItems("remito"));
+        $itemsFact=$this->getModel()->findAllItems($this->getFiltersItems("factura"));
+        $itemsAdd=$this->getModel()->findAllItems($this->getFiltersItems("agregado"));
+
+        $resp=array('itemsFact' => $itemsFact, 'itemsRem' => $itemsRem, 'itemsAdd' => $itemsAdd);
+
+        $this->returnSuccess(200,$resp);
+    }
+
+   /* function getItemsByOrderIdEdit(){
+        $filter=array();
+        $filter[] = 'order_id = "'.$_GET['order_id'].'"';
+
+        $resp=$this->model->findAllItems($filter);
+
+        $this->returnSuccess(200,$resp);
+    }*/
+
+
     function check(){
 
         if(isset($_GET['item_id'])){
-
             $this->getModel()->update($_GET['item_id'],array('loaded' => $_GET['loaded']));
             $stateOrder=array('state'=>$_GET['loaded']);
 
@@ -61,27 +81,6 @@ class ItemsOrderController extends BaseController
             $res = $this->model->save($newItemOrder);
         }
     }
-
-    function getItemsByOrderId(){
-
-        $itemsRem=$this->getModel()->findAllItems($this->getFiltersItems("remito"));
-        $itemsFact=$this->getModel()->findAllItems($this->getFiltersItems("factura"));
-        $itemsAdd=$this->getModel()->findAllItems($this->getFiltersItems("agregado"));
-
-        $resp=array('itemsFact' => $itemsFact, 'itemsRem' => $itemsRem, 'itemsAdd' => $itemsAdd);
-
-        $this->returnSuccess(200,$resp);
-    }
-
-    function getItemsByOrderIdEdit(){
-        $filter=array();
-        $filter[] = 'order_id = "'.$_GET['order_id'].'"';
-
-        $resp=$this->model->findAllItems($filter);
-
-        $this->returnSuccess(200,$resp);
-    }
-
 
     function put()
     {

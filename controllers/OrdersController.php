@@ -145,7 +145,6 @@ class OrdersController extends BaseController
                 if($items_order_list[$i]['billing'] == "remito"){
                     $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
 
-
                 }else if($items_order_list[$i]['billing'] == "factura"){
                     $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
 
