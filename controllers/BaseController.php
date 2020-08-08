@@ -65,7 +65,7 @@ abstract class BaseController
             $this->returnError(404, "CONTROLLER METHOD NOT FOUND");
         }
     }
-/*
+
     function get(){
         $this->beforeMethod();
         if(isset($_GET['method'])){
@@ -126,7 +126,7 @@ abstract class BaseController
         }else{
             $this->returnError(404,"ENTITY #".$_GET['id']." NOT FOUND");
         }
-    }*/
+    }
 
     function validateCreated(){
         return isset($_GET['created']);

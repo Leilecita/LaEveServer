@@ -23,12 +23,12 @@ abstract class SecureBaseController extends BaseController
     }
 
     function _checkSession(){
-        $this->currentUser = SessionHelper::getCurrentUser();
+     /*   $this->currentUser = SessionHelper::getCurrentUser();
         if($this->getCurrentUser() == null) {
             error_log("checksession null");
             $this->returnError(401,'Session invalida');
             exit;
-        }
+        }*/
     }
 
     function getCurrentUser(){
