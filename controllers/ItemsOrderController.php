@@ -76,7 +76,7 @@ class ItemsOrderController extends BaseController
                 'product_descr' => $item_order['product_descr'] ,'quantity' => $differenceQuantity, 'price' => $item_order['price'],
                 'preci1' => $item_order['preci1'],'preci2' => $item_order['preci2'],'preci3' => $item_order['preci3'],'preci4' => $item_order['preci4'],
                 'preci5' => $item_order['preci5'],'loaded' => "false",'reasigned_quantity' => 'true','pendient_stock' => 'false','billing' => $item_order['billing'],
-                'observation' => "", 'kg' => 0, 'able_kg' => $item_order['able_kg']);
+                'observation' => "", 'kg' => 0, 'able_kg' => $item_order['able_kg'], 'able_text' => $item_order['able_text']);
 
             $res = $this->model->save($newItemOrder);
         }
