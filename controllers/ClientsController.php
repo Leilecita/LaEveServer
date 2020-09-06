@@ -8,10 +8,11 @@
 
 
 require_once 'BaseController.php';
+require_once __DIR__.'/SecureBaseController.php';
 require_once __DIR__.'/../models/ClientModel.php';
 require_once __DIR__.'/../models/OrderModel.php';
 
-class ClientsController extends BaseController
+class ClientsController extends SecureBaseController
 {
     private $orders;
     function __construct(){

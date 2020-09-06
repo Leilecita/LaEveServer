@@ -7,11 +7,12 @@
  */
 
 require_once 'BaseController.php';
+require_once __DIR__.'/SecureBaseController.php';
 require_once  __DIR__.'/../models/OrderModel.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
 require_once __DIR__.'/../models/ClientModel.php';
 
-class OrdersController extends BaseController
+class OrdersController extends SecureBaseController
 {
     private $items_order;
     private $clients;

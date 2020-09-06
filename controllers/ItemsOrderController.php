@@ -6,9 +6,10 @@
  * Time: 15:31
  */
 require_once 'BaseController.php';
+require_once __DIR__.'/SecureBaseController.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
 require_once __DIR__.'/../models/ProductModel.php';
-class ItemsOrderController extends BaseController
+class ItemsOrderController extends SecureBaseController
 {
     private $products;
 

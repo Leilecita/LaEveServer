@@ -7,8 +7,9 @@
  */
 
 require_once 'BaseController.php';
+require_once __DIR__.'/SecureBaseController.php';
 require_once __DIR__.'/../models/ZoneModel.php';
-class ZonesController extends BaseController
+class ZonesController extends SecureBaseController
 {
     function __construct(){
         parent::__construct();

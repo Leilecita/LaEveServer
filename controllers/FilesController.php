@@ -8,8 +8,9 @@
 
 
 require_once 'BaseController.php';
+require_once __DIR__.'/SecureBaseController.php';
 require_once __DIR__.'/../models/FileModel.php';
-class FilesController extends BaseController
+class FilesController extends SecureBaseController
 {
 
     function __construct(){

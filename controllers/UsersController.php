@@ -23,4 +23,9 @@ class UsersController extends SecureBaseController
         $this->returnSuccess(200,array("token" => $user['token']));
     }
 
+    function getAllUsers(){
+        $this->returnSuccess(200,$this->getModel()->findAllAll($this->getFilters()));
+
+    }
+
 }
