@@ -43,7 +43,6 @@ class OrderModel extends BaseModel
 
     function countPrepare($delivery_date,$state){
 
-      //  $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ?  AND state_prepare = ? AND state_check = ?',$delivery_date,$state,"check");
         $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_prepare = ? AND state_check = ? AND delivery_date != ?',$state,"check","1999-10-10");
 
         if($response['total']!=null){

@@ -20,4 +20,10 @@ class WorkerModel extends BaseModel
         return $this->getDb()->fetch_all($query);
     }
 
+    function getUsersJoinWorkers($filters=array(),$paginator=array()){
+        $conditions = join(' AND ',$filters);
+        $query = 'SELECT *, w.name as worker_name, w.id as worker_id, u.id as user_id FROM workers w JOIN users u ON w.id = u.worker_id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY w.created DESC LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        return $this->getDb()->fetch_all($query);
+    }
+
 }

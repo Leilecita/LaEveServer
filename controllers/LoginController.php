@@ -8,15 +8,19 @@
 
 require_once 'BaseController.php';
 require_once  __DIR__.'/../models/UserModel.php';
+require_once  __DIR__.'/../models/WorkerModel.php';
 require_once  __DIR__.'/../libs/SessionHelper.php';
 
 define('KEY_ACCESS',"lorena");
 class LoginController extends BaseController
 {
+
+    private $workers;
     function __construct()
     {
         parent::__construct();
         $this->model = new UserModel();
+        $this->workers = new WorkerModel();
     }
 
     function getAllUsers(){
@@ -35,7 +39,7 @@ class LoginController extends BaseController
         if($user){
             $token = SessionHelper::genrateSessionToken();
             $this->model->update($user['id'],array('token' => $token));
-            $result = array('token' => $token,'name' => $user['name'], 'category' => $user['category'],'id' => $user['id']);
+            $result = array('token' => $token,'name' => $user['name'], 'category' => $user['category'], 'zone' => $user['zone'], 'id' => $user['id']);
             $this->returnSuccess(200,$result);
         }else{
             $this->returnError(401,'Usuario o contraseña incorrecto');
@@ -59,11 +63,21 @@ class LoginController extends BaseController
 
                 $hash_password=SessionHelper::passwordToHash($inserted['hash_password']);;
                 $this->model->update($inserted['id'],array('hash_password' => $hash_password));
+
+                $resWorker = $this->createWorker($inserted) ;
+
+                $this->model->update($inserted['id'],array('worker_id' => $resWorker));
+
                 $this->returnSuccess(201,$inserted);
             }
         }else{
             $this->returnError(400,"Codigo de acceso no valido");
         }
+    }
+
+    function createWorker($inserted){
+        $newWorker =array('name' => $inserted['name'], 'surname' => " ", 'load_worker' => "false", 'prepare_worker' => "false", 'bill_worker' => "false", 'delivery_worker' => "false" );
+        return $this->workers->save($newWorker);
     }
 
 

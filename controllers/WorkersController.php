@@ -28,6 +28,27 @@ class WorkersController extends SecureBaseController
         $this->clients=new ClientModel();
     }
 
+    function getWorkers(){
+
+
+        $workers = $this->model->getUsersJoinWorkers($this->getFilters(), $this->getPaginator());
+        $reportWorker = array();
+        for ($j = 0; $j < count($workers); ++$j) {
+
+            $reportWorker[] = array('name' => $workers[$j]['worker_name'],'load_worker' => $workers[$j]['load_worker'],
+                'prepare_worker' => $workers[$j]['prepare_worker'],
+                'delivery_worker' => $workers[$j]['delivery_worker'],
+                'bill_worker' => $workers[$j]['bill_worker'],
+                'category' => $workers[$j]['category'],
+                'zone' => $workers[$j]['zone'],
+                'worker_id' => $workers[$j]['worker_id'],
+                'user_id' => $workers[$j]['user_id'],
+                );
+        }
+
+        $this->returnSuccess(200, $reportWorker);
+    }
+
     function getWorkersBy(){
 
         $res=array();
@@ -42,9 +63,7 @@ class WorkersController extends SecureBaseController
             $res=$this->model->findAllWorkers(array('bill_worker = "true"'));
         }
 
-
         $this->returnSuccess(200,$res);
-
     }
 
 
