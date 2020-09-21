@@ -28,11 +28,9 @@ class OrdersController extends SecureBaseController
         $this->state_order="";
     }
 
-
     public function delete()
     {
         //TODO ver estado del pedido, si no esta entregado, se borra todo
-
         if(isset($_GET['id'])){
             $this->items_order->deleteAllByOrderId($_GET['id']);
         }
@@ -206,7 +204,6 @@ class OrdersController extends SecureBaseController
             $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
 
-
     function deleteRemainingProducts($order_id){
 
         $filtersItem=array();
@@ -218,7 +215,6 @@ class OrdersController extends SecureBaseController
             $this->items_order->delete($items_order_list[$i]['id']);
         }
     }
-
 
     //nueva orden desde facturacion
 
