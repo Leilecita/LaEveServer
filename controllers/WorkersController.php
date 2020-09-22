@@ -67,6 +67,58 @@ class WorkersController extends SecureBaseController
     }
 
 
+
+
+    function getWorkerLiquidation(){
+
+        if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
+
+            $total_amount=$this->orders->sumTotalAmount($_GET['delivery_date'],$_GET['worker_name'],"delivery");
+
+            $total_paid_amount=$this->orders->sumPaidAmountByWorker($_GET['delivery_date'],$_GET['worker_name'],"delivery");
+
+            $delivery_orders_quantity= $this->orders->countDeliveryOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
+
+            $pendients_orders_quantity= $this->orders->countDeliveryOrders($_GET['delivery_date'],$_GET['worker_name'],"todelivery");
+
+            $reportWorkerLiquidation=array('total_amount' => $total_amount,'total_paid_amount' => $total_paid_amount,
+                'quantity_delivery_orders' => $delivery_orders_quantity,'quantity_delivery_pendients' => $pendients_orders_quantity, 'load_orders_quantity' => 0
+                );
+
+            $this->returnSuccess(200, $reportWorkerLiquidation);
+
+        }else{
+            $this->returnError(404,"ENTITY NOT FOUND");
+        }
+    }
+
+    function getLoadWorkerLiquidation(){
+
+        if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
+
+           // $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery",$_GET['loaded_in']);
+
+            $loaded_orders_m= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Mostrador");
+            $loaded_orders_v= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Vendedor");
+            $loaded_orders_w= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Whatsapp");
+            $loaded_orders_t= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Telefono");
+
+            $total_load_orders= $this->orders->countTotalLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
+
+            $reportWorkerLiquidation=array('order_w' => $loaded_orders_w,'order_m' => $loaded_orders_m,
+                'order_t' => $loaded_orders_t,'order_v' => $loaded_orders_v, 'total_orders' => $total_load_orders
+            );
+
+            $this->returnSuccess(200, $reportWorkerLiquidation);
+
+        }else{
+            $this->returnError(404,"ENTITY NOT FOUND");
+        }
+    }
+}
+
+/*
+ *
     public function filterDeliveryWorkers($worker_name,$delivery_date)
     {
         $filters = array();
@@ -92,7 +144,7 @@ class WorkersController extends SecureBaseController
         return $filters;
     }
 
-    function getWorkerLoadLiquidationList(){
+ function getWorkerLoadLiquidationList(){
 
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
 
@@ -130,6 +182,7 @@ class WorkersController extends SecureBaseController
                 $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
 
 
+
                 $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
                     'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
                     'order_state' => $list_orders_by_deliver_date[$j]['state'],
@@ -141,12 +194,12 @@ class WorkersController extends SecureBaseController
                     'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
                     'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
                     'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
-                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
+                    'client_nomcli' => $client['nomcli'],
+                    'client_dircli' =>$client['dircli'],
+                    'client_loccli' => $client['loccli'],
                     'assigned_zone' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
-                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
+                    'client_comcli' => $client['comcli'],
+                    'client_telcli' => $client['telcli'],
                     'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
@@ -231,12 +284,12 @@ class WorkersController extends SecureBaseController
                     'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
                     'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
                     'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
-                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
+                    'client_nomcli' => $client['nomcli'],
+                    'client_dircli' =>$client['dircli'],
+                    'client_loccli' => $client['loccli'],
                     'assigned_zone' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
-                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
+                    'client_comcli' => $client['comcli'],
+                    'client_telcli' => $client['telcli'],
                     'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
@@ -256,50 +309,4 @@ class WorkersController extends SecureBaseController
 
 
     }
-    function getWorkerLiquidation(){
-
-        if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
-
-            $total_amount=$this->orders->sumTotalAmount($_GET['delivery_date'],$_GET['worker_name'],"delivery");
-
-            $total_paid_amount=$this->orders->sumPaidAmountByWorker($_GET['delivery_date'],$_GET['worker_name'],"delivery");
-
-            $delivery_orders_quantity= $this->orders->countDeliveryOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
-
-            $pendients_orders_quantity= $this->orders->countDeliveryOrders($_GET['delivery_date'],$_GET['worker_name'],"todelivery");
-
-            $reportWorkerLiquidation=array('total_amount' => $total_amount,'total_paid_amount' => $total_paid_amount,
-                'quantity_delivery_orders' => $delivery_orders_quantity,'quantity_delivery_pendients' => $pendients_orders_quantity, 'load_orders_quantity' => 0
-                );
-
-            $this->returnSuccess(200, $reportWorkerLiquidation);
-
-        }else{
-            $this->returnError(404,"ENTITY NOT FOUND");
-        }
-    }
-
-    function getLoadWorkerLiquidation(){
-
-        if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
-
-           // $loaded_orders= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery",$_GET['loaded_in']);
-
-            $loaded_orders_m= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Mostrador");
-            $loaded_orders_v= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Vendedor");
-            $loaded_orders_w= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Whatsapp");
-            $loaded_orders_t= $this->orders->countLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery","Telefono");
-
-            $total_load_orders= $this->orders->countTotalLoadOrders($_GET['delivery_date'],$_GET['worker_name'],"delivery");
-
-            $reportWorkerLiquidation=array('order_w' => $loaded_orders_w,'order_m' => $loaded_orders_m,
-                'order_t' => $loaded_orders_t,'order_v' => $loaded_orders_v, 'total_orders' => $total_load_orders
-            );
-
-            $this->returnSuccess(200, $reportWorkerLiquidation);
-
-        }else{
-            $this->returnError(404,"ENTITY NOT FOUND");
-        }
-    }
-}
+ */

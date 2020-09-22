@@ -113,6 +113,8 @@ class OrdersController extends SecureBaseController
         return $filters;
     }
 
+
+
     function listAllOrders(){
 
             $listReport = array();
@@ -549,6 +551,45 @@ class OrdersController extends SecureBaseController
                 $this->returnError(404,"ENTITY NOT FOUND");
             }
         }
+    }
+
+    //WORKER LIQUIDATIONS
+    public function filterDeliveryWorkers($worker_name,$delivery_date)
+    {
+        $filters = array();
+
+        $filters[] = 'delivery_by = "' . $worker_name . '"';
+        $filters[] = 'state_delivery = "delivery"';
+        $filters[] = 'delivery_date = "' .$delivery_date.'"';
+
+        return $filters;
+    }
+
+    public function filterLoadWorkers($worker_name,$delivery_date,$loaded_in)
+    {
+        $filters = array();
+
+        $filters[] = 'loaded_by = "' . $worker_name . '"';
+        if($loaded_in != ""){
+            $filters[] = 'loaded_in = "' . $loaded_in . '"';
+        }
+        $filters[] = 'state_delivery = "delivery"';
+        $filters[] = 'delivery_date = "' .$delivery_date.'"';
+
+        return $filters;
+    }
+
+    function getWorkerLiquidationList(){
+        $listReport = array();
+        $list_orders_by_deliver_date = $this->model->getAllOrders($this->filterDeliveryWorkers($_GET['worker_name'],$_GET['delivery_date']),$this->getPaginator());
+        $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
+    }
+
+
+    function getWorkerLoadLiquidationList(){
+        $listReport = array();
+        $list_orders_by_deliver_date = $this->model->getAllOrders($this->filterLoadWorkers($_GET['worker_name'],$_GET['delivery_date'],$_GET['loaded_in']),$this->getPaginator());
+        $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
 }
 
