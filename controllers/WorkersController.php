@@ -114,28 +114,24 @@ class WorkersController extends SecureBaseController
 
 
                     if($items_order_list[$i]['billing'] == "remito"){
-                        $array_item_product_rem[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
-                    }else if($items_order_list[$i]['billing'] == "factura" ){
-                        $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                        $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
+                    }else if($items_order_list[$i]['billing'] == "factura"){
+                        $array_item_product[] =  $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
                     }else{
-                        $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                        $array_item_product_add[] = $this->createReportItem($items_order_list[$i],$array_item_product_add);
                     }
+
                     if($items_order_list[$i]['loaded'] == "true") {
                         $total_amount = $total_amount + ($items_order_list[$i]['price'] * $items_order_list[$i]['quantity']);
                     }
-
                 }
 
+                $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
+                $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
+
+
                 $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
-                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['id'],
+                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
                     'order_state' => $list_orders_by_deliver_date[$j]['state'],
                     'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
                     'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
@@ -145,16 +141,21 @@ class WorkersController extends SecureBaseController
                     'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
                     'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
                     'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $client['nomcli'],
-                    'client_dircli' => $client['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $client['comcli'],
+                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
+                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
+                    'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
+                    'assigned_zone' => $list_orders_by_deliver_date[$j]['assigned_zone'],
+                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
+                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
                     'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
                     'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
-                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
+                    'billed_by' => $list_orders_by_deliver_date[$j]['billed_by'],
+                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by'],
+                    'products_cant' => $items_cant,
+                    'pendients_cant' => $pendient_items
                 );
             }
 
@@ -166,7 +167,22 @@ class WorkersController extends SecureBaseController
 
     }
 
+    function createReportItem($items_order_list,$array_item){
 
+        $array_item = array('item_order_id' => $items_order_list['id'],'product_descr' => $items_order_list['product_descr'], 'price' => $items_order_list['price'],
+            'preci1' => $items_order_list['preci1'],'preci2' => $items_order_list['preci2'],'preci3' => $items_order_list['preci3'],'preci4' => $items_order_list['preci4'],'preci5' => $items_order_list['preci5'],
+            'quantity' => $items_order_list['quantity'],'loaded' => $items_order_list['loaded'],'reasigned_quantity' => $items_order_list['reasigned_quantity'],
+            'pendient_stock' => $items_order_list['pendient_stock'],'billing' => $items_order_list['billing'],
+            'observation' =>  $items_order_list['observation'],
+            'kg' => $items_order_list['kg'],
+            'able_kg' => $items_order_list['able_kg'],
+            'product_code' => $items_order_list['product_code'],
+            'able_text' => $items_order_list['able_text']
+        );
+
+        return $array_item;
+
+    }
     function getWorkerLiquidationList(){
 
         if(isset($_GET['worker_name']) && isset($_GET['delivery_date'])){
@@ -187,32 +203,25 @@ class WorkersController extends SecureBaseController
                 for ($i = 0; $i < count($items_order_list); ++$i) {
 
                     if($items_order_list[$i]['billing'] == "remito"){
-                        $array_item_product_rem[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
-
+                        $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
                     }else if($items_order_list[$i]['billing'] == "factura"){
-                        $array_item_product[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                        $array_item_product[] =  $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
                     }else{
-
-                        $array_item_product_add[] = array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                            'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                            'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                            'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing']);
+                        $array_item_product_add[] = $this->createReportItem($items_order_list[$i],$array_item_product_add);
                     }
 
 
                     if($items_order_list[$i]['loaded'] == "true") {
                         $total_amount = $total_amount + ($items_order_list[$i]['price'] * $items_order_list[$i]['quantity']);
                     }
-
                 }
 
+                $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
+                $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
+
+
                 $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
-                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['id'],
+                    'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
                     'order_state' => $list_orders_by_deliver_date[$j]['state'],
                     'order_state_check' => $list_orders_by_deliver_date[$j]['state_check'],
                     'order_state_prepare' => $list_orders_by_deliver_date[$j]['state_prepare'],
@@ -222,16 +231,21 @@ class WorkersController extends SecureBaseController
                     'order_paid_out' => $list_orders_by_deliver_date[$j]['paid_out'],
                     'order_paid_amount' => $list_orders_by_deliver_date[$j]['paid_amount'],
                     'client_id' => $list_orders_by_deliver_date[$j]['client_id'],
-                    'client_nomcli' => $client['nomcli'],
-                    'client_dircli' => $client['dircli'],
-                    'client_loccli' => $list_orders_by_deliver_date[$j]['assigned_zone'],
-                    'client_comcli' => $client['comcli'],
+                    'client_nomcli' => $list_orders_by_deliver_date[$j]['nomcli'],
+                    'client_dircli' =>$list_orders_by_deliver_date[$j]['dircli'],
+                    'client_loccli' => $list_orders_by_deliver_date[$j]['loccli'],
+                    'assigned_zone' => $list_orders_by_deliver_date[$j]['assigned_zone'],
+                    'client_comcli' => $list_orders_by_deliver_date[$j]['comcli'],
+                    'client_telcli' => $list_orders_by_deliver_date[$j]['telcli'],
                     'delivery_date' => $list_orders_by_deliver_date[$j]['delivery_date'], 'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add,
                     'amount_order' => $total_amount,
                     'loaded_in' => $list_orders_by_deliver_date[$j]['loaded_in'],
                     'loaded_by' => $list_orders_by_deliver_date[$j]['loaded_by'],
                     'prepared_by' => $list_orders_by_deliver_date[$j]['prepared_by'],
-                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by']
+                    'billed_by' => $list_orders_by_deliver_date[$j]['billed_by'],
+                    'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by'],
+                    'products_cant' => $items_cant,
+                    'pendients_cant' => $pendient_items
                 );
             }
 
