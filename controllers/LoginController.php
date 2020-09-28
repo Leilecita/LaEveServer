@@ -9,6 +9,7 @@
 require_once 'BaseController.php';
 require_once  __DIR__.'/../models/UserModel.php';
 require_once  __DIR__.'/../models/WorkerModel.php';
+require_once  __DIR__.'/../models/AssignedZoneModel.php';
 require_once  __DIR__.'/../libs/SessionHelper.php';
 
 define('KEY_ACCESS',"lorena");
@@ -16,11 +17,13 @@ class LoginController extends BaseController
 {
 
     private $workers;
+    private $assigned_zones;
     function __construct()
     {
         parent::__construct();
         $this->model = new UserModel();
         $this->workers = new WorkerModel();
+        $this->assigned_zones = new AssignedZoneModel();
     }
 
     function getAllUsers(){
@@ -39,7 +42,11 @@ class LoginController extends BaseController
         if($user){
             $token = SessionHelper::genrateSessionToken();
             $this->model->update($user['id'],array('token' => $token));
-            $result = array('token' => $token,'name' => $user['name'], 'category' => $user['category'], 'zone' => $user['zone'], 'id' => $user['id']);
+
+            $assigned_zones = $this->assigned_zones->findAssignedZones(array('a.user_id = "'.$user['id'].'"'));
+
+            $result = array('token' => $token,'name' => $user['name'], 'category' => $user['category'], 'zone' => $user['zone'], 'id' => $user['id'],
+                'assigned_zones' => $assigned_zones);
             $this->returnSuccess(200,$result);
         }else{
             $this->returnError(401,'Usuario o contraseña incorrecto');

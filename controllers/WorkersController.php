@@ -13,12 +13,14 @@ require_once __DIR__.'/../models/WorkerModel.php';
 require_once __DIR__.'/../models/OrderModel.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
 require_once __DIR__.'/../models/ClientModel.php';
+require_once __DIR__.'/../models/AssignedZoneModel.php';
 class WorkersController extends SecureBaseController
 {
 
     private $orders;
     private $items_order;
     private $clients;
+    private $assigned_zones;
 
     function __construct(){
         parent::__construct();
@@ -26,9 +28,10 @@ class WorkersController extends SecureBaseController
         $this->orders=new OrderModel();
         $this->items_order=new ItemOrderModel();
         $this->clients=new ClientModel();
+        $this->assigned_zones=new AssignedZoneModel();
     }
 
-    function getWorkers(){
+    function getWorkersOld(){
 
 
         $workers = $this->model->getUsersJoinWorkers($this->getFilters(), $this->getPaginator());
@@ -44,6 +47,29 @@ class WorkersController extends SecureBaseController
                 'worker_id' => $workers[$j]['worker_id'],
                 'user_id' => $workers[$j]['user_id'],
                 );
+        }
+
+        $this->returnSuccess(200, $reportWorker);
+    }
+
+    function getWorkers(){
+
+        $workers = $this->model->getUsersJoinWorkers($this->getFilters(), $this->getPaginator());
+        $reportWorker = array();
+        for ($j = 0; $j < count($workers); ++$j) {
+
+            $assigned_zones = $this->assigned_zones->findAssignedZones(array('a.user_id = "'.$workers[$j]['user_id'].'"'));
+
+            $reportWorker[] = array('name' => $workers[$j]['worker_name'],'load_worker' => $workers[$j]['load_worker'],
+                'prepare_worker' => $workers[$j]['prepare_worker'],
+                'delivery_worker' => $workers[$j]['delivery_worker'],
+                'bill_worker' => $workers[$j]['bill_worker'],
+                'category' => $workers[$j]['category'],
+                'zone' => $workers[$j]['zone'],
+                'worker_id' => $workers[$j]['worker_id'],
+                'user_id' => $workers[$j]['user_id'],
+                'assigned_zones' => $assigned_zones,
+            );
         }
 
         $this->returnSuccess(200, $reportWorker);
