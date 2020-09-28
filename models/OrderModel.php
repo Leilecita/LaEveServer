@@ -162,4 +162,12 @@ class OrderModel extends BaseModel
         $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY created DESC';
         return $this->getDb()->fetch_all($query);
     }
+
+
+    function deleteEmptyOrders($filters){
+        $conditions = join(' AND ',$filters);
+        $query = 'DELETE FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions );
+        return $this->getDb()->fetch_row($query);
+    }
+
 }
