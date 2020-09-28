@@ -282,7 +282,6 @@ class OrdersController extends SecureBaseController
     }
     //
 
-
     function checkFullOrder(){
         $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
         if($res == 0){
@@ -370,6 +369,7 @@ class OrdersController extends SecureBaseController
             $checked=$this->model->countCheck($_GET['delivery_date'],'check');
             $pendients=$this->model->countCheck($_GET['delivery_date'],'tocheck');
         }else if ($_GET['state_name']== 'toprepare'){
+
             $checked=$this->model->countPrepare($_GET['delivery_date'],'prepare');
             $pendients=$this->model->countPrepare($_GET['delivery_date'],'toprepare');
 
@@ -377,10 +377,12 @@ class OrdersController extends SecureBaseController
 
             $checked=$this->model->countDelivery($_GET['delivery_date'],'delivery');
             $pendients=$this->model->countDelivery($_GET['delivery_date'],'todelivery');
+
         }else if ($_GET['state_name']== 'tobilling'){
 
             $checked=$this->model->countBilling($_GET['delivery_date'],'billing');
             $pendients=$this->model->countBilling($_GET['delivery_date'],'tobilling');
+
         }
         $resp=array('pendients' => $pendients, 'checked' => $checked);
 
