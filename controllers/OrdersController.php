@@ -11,6 +11,7 @@ require_once __DIR__.'/SecureBaseController.php';
 require_once  __DIR__.'/../models/OrderModel.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
 require_once __DIR__.'/../models/ClientModel.php';
+require_once __DIR__.'/../models/UserModel.php';
 
 class OrdersController extends SecureBaseController
 {
@@ -18,12 +19,14 @@ class OrdersController extends SecureBaseController
     private $clients;
 
     private $state_order;
+    private $users;
 
     function __construct(){
         parent::__construct();
         $this->model = new OrderModel();
         $this->items_order= new ItemOrderModel();
         $this->clients= new ClientModel();
+        $this->users= new UserModel();
 
         $this->state_order="";
     }
@@ -85,12 +88,10 @@ class OrdersController extends SecureBaseController
         }
 
         if(isset($_GET['zone']) && !empty($_GET['zone'])){
-            //$filters[] = 'loccli like "%'.$_GET['zone'].'%"';
             $filters[] = 'assigned_zone = "' . $_GET['zone'] . '"';
         }
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
-           // $filters[] = 'comcli like "%'.$_GET['query'].'%"';
             $filters[] = '(comcli like "%'.$_GET['query'].'%" OR nomcli like "%'.$_GET['query'].'%")';
         }
 
@@ -101,19 +102,14 @@ class OrdersController extends SecureBaseController
         $filters=array();
 
         if(isset($_GET['query']) && !empty($_GET['query'])){
-            //$filters[] = 'comcli like "%'.$_GET['query'].'%"';
             $filters[] = '(comcli like "%'.$_GET['query'].'%" OR nomcli like "%'.$_GET['query'].'%")';
         }
 
         if(isset($_GET['zone']) && !empty($_GET['zone'])){
-            //$filters[] = 'loccli like "%'.$_GET['zone'].'%"';
             $filters[] = 'assigned_zone = "' . $_GET['zone'] . '"';
         }
-
         return $filters;
     }
-
-
 
     function listAllOrders(){
 
@@ -162,6 +158,8 @@ class OrdersController extends SecureBaseController
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
 
+            $process_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_user_id']);
+
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
                 'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
                 'order_state' => $list_orders_by_deliver_date[$j]['state'],
@@ -187,7 +185,10 @@ class OrdersController extends SecureBaseController
                 'billed_by' => $list_orders_by_deliver_date[$j]['billed_by'],
                 'delivery_by' => $list_orders_by_deliver_date[$j]['delivery_by'],
                 'products_cant' => $items_cant,
-                'pendients_cant' => $pendient_items
+                'pendients_cant' => $pendient_items,
+                'prepare_in_process' => $list_orders_by_deliver_date[$j]['prepare_in_process'],
+                'process_user_name' => $process_user['name']
+
             );
         }
 
@@ -257,7 +258,7 @@ class OrdersController extends SecureBaseController
         if($res>= 0){
             //me guardo el id de la orden a la que van a ser reasignados los productos.
 
-            $this->getModel()->update($order['id'],array('order_reasigned_id' => $res));
+            $this->model->update($order['id'],array('order_reasigned_id' => $res));
 
             for ($i = 0; $i < count($items_order_list); ++$i) {
                 if($items_order_list[$i]['loaded'] == "false"){
@@ -293,49 +294,51 @@ class OrdersController extends SecureBaseController
         }
     }
 
+   function takeOrderPrepare(){
+       $this->model->update($_GET['order_id'],array('prepare_in_process' => "true"));
+       $this->model->update($_GET['order_id'],array('process_user_id' => $_GET['user_id']));
+       $this->returnSuccess(200,array('result' => "true"));
+   }
+
+    function leaveOrderPrepare(){
+        $this->model->update($_GET['order_id'],array('prepare_in_process' => "false"));
+        $this->model->update($_GET['order_id'],array('process_user_id' => -1));
+        $this->returnSuccess(200,array('result' => "false"));
+    }
+
     function changeStateOrder(){
 
         if(isset($_GET['state'])){
             if($_GET['state_name'] == 'tocheck'){
 
-                $this->getModel()->update($_GET['order_id'],array('state_check' => $_GET['state']));
+                $this->model->update($_GET['order_id'],array('state_check' => $_GET['state']));
                 if($_GET['state'] == "check"){
-                    $this->getModel()->update($_GET['order_id'],array('toprepare' => "true"));
+                    $this->model->update($_GET['order_id'],array('toprepare' => "true"));
                 }else{
-                    $this->getModel()->update($_GET['order_id'],array('toprepare' => "false"));
+                    $this->model->update($_GET['order_id'],array('toprepare' => "false"));
                 }
 
             }else if($_GET['state_name'] == 'toprepare'){
 
-                $this->getModel()->update($_GET['order_id'],array('state_prepare' => $_GET['state']));
+                $this->model->update($_GET['order_id'],array('state_prepare' => $_GET['state']));
                 if($_GET['state'] == "prepare"){
 
-                   // if($this->isFullOrderCharged() == "falta"){
-
-                        //ya no se hace mas de aca
-
-                       // $this->createNewOrderWithReasigneditems($_GET['order_id']);
-                    //}
-
-                    $this->getModel()->update($_GET['order_id'],array('tobilling' => "true"));
+                    $this->model->update($_GET['order_id'],array('tobilling' => "true"));
                 }else{
-
-                   //$this->deleteOrderWithReasignedItems($_GET['order_id']);
-
-                    $this->getModel()->update($_GET['order_id'],array('tobilling' => "false"));
+                    $this->model->update($_GET['order_id'],array('tobilling' => "false"));
                 }
 
             }else if($_GET['state_name'] == 'tobilling'){
 
-                $this->getModel()->update($_GET['order_id'],array('state_billing' => $_GET['state']));
+                $this->model->update($_GET['order_id'],array('state_billing' => $_GET['state']));
                 if($_GET['state'] == "billing"){
-                    $this->getModel()->update($_GET['order_id'],array('todelivery' => "true"));
+                    $this->model->update($_GET['order_id'],array('todelivery' => "true"));
                 }else{
-                    $this->getModel()->update($_GET['order_id'],array('todelivery' => "false"));
+                    $this->model->update($_GET['order_id'],array('todelivery' => "false"));
                 }
 
             }else if($_GET['state_name'] == 'todelivery'){
-                $this->getModel()->update($_GET['order_id'],array('state_delivery' => $_GET['state']));
+                $this->model->update($_GET['order_id'],array('state_delivery' => $_GET['state']));
             }
 
             $stateOrder=array('state'=>$_GET['state']);
@@ -343,15 +346,15 @@ class OrdersController extends SecureBaseController
             //asignar empleado
 
             if(isset($_GET['prepared_by'])) {
-                $this->getModel()->update($_GET['order_id'], array('prepared_by' => $_GET['prepared_by']));
+                $this->model->update($_GET['order_id'], array('prepared_by' => $_GET['prepared_by']));
             }
 
             if(isset($_GET['billed_by'])) {
-                $this->getModel()->update($_GET['order_id'], array('billed_by' => $_GET['billed_by']));
+                $this->model->update($_GET['order_id'], array('billed_by' => $_GET['billed_by']));
             }
 
             if(isset($_GET['delivery_by'])) {
-                $this->getModel()->update($_GET['order_id'], array('delivery_by' => $_GET['delivery_by']));
+                $this->model->update($_GET['order_id'], array('delivery_by' => $_GET['delivery_by']));
             }
 
             $this->returnSuccess(200,$stateOrder);
@@ -389,12 +392,12 @@ class OrdersController extends SecureBaseController
         $this->returnSuccess(200,$resp);
     }
 
-    function  updatePaymentValue(){
+    function updatePaymentValue(){
 
         if(isset($_GET['order_id']) ){
 
-            $this->getModel()->update($_GET['order_id'],array('paid_amount' => $_GET['value']));
-            $this->getModel()->update($_GET['order_id'],array('paid_out' => "true"));
+            $this->model->update($_GET['order_id'],array('paid_amount' => $_GET['value']));
+            $this->model->update($_GET['order_id'],array('paid_out' => "true"));
 
             $paymentData=array('state'=>"value", 'total_amount' => $_GET['value']);
 
@@ -412,30 +415,30 @@ class OrdersController extends SecureBaseController
             $total_amount=0;
 
             if($_GET['paid'] == 'false'){
-                $this->getModel()->update($_GET['order_id'],array('paid_out' => "false"));
+                $this->model->update($_GET['order_id'],array('paid_out' => "false"));
 
-                $this->getModel()->update($_GET['order_id'],array('paid_amount' => 0));
-                $this->getModel()->update($_GET['order_id'],array('total_amount' => 0));
+                $this->model->update($_GET['order_id'],array('paid_amount' => 0));
+                $this->model->update($_GET['order_id'],array('total_amount' => 0));
                 $total_amount=0;
 
                 $select="false";
             }else if($_GET['paid'] == 'true'){
 
-                $this->getModel()->update($_GET['order_id'],array('paid_out' => "true"));
+                $this->model->update($_GET['order_id'],array('paid_out' => "true"));
 
                 $total_amount=$this->getTotalAmountByOrderId($_GET['order_id']);
 
-                $this->getModel()->update($_GET['order_id'],array('paid_amount' => $total_amount));
-                $this->getModel()->update($_GET['order_id'],array('total_amount' => $total_amount));
+                $this->model->update($_GET['order_id'],array('paid_amount' => $total_amount));
+                $this->model->update($_GET['order_id'],array('total_amount' => $total_amount));
 
                 $select="true";
             }
 
             if($_GET['signed'] == 'false'){
-                $this->getModel()->update($_GET['order_id'],array('signed' => "false"));
+                $this->model->update($_GET['order_id'],array('signed' => "false"));
                 $select="false";
             }else if($_GET['signed'] == 'true'){
-                $this->getModel()->update($_GET['order_id'],array('signed' => "true"));
+                $this->model->update($_GET['order_id'],array('signed' => "true"));
                 $select="true";
             }
 
@@ -449,7 +452,7 @@ class OrdersController extends SecureBaseController
 
 
     function getTotalAmountByOrderId($order_id){
-        $order= $this->getModel()->findById($order_id);
+        $order= $this->model->findById($order_id);
 
         if($order>0){
 
@@ -463,7 +466,6 @@ class OrdersController extends SecureBaseController
             }
             return $total_amount;
         }else{
-
             return 0;
         }
     }
@@ -522,6 +524,8 @@ class OrdersController extends SecureBaseController
                 $items_cant = $this->items_order->countItemsByOrder($_GET['order_id']);
                 $pendient_items = $this->items_order->countPendientItems("false" ,$_GET['order_id']);
 
+                $process_user = $this->users->findById($order['process_user_id']);
+
                 $listReport = array('order_created' =>$order['created'],
                     'order_obs' => $order['observation'],'order_id' => $order['id'],
                     'order_state' => $order['state'],
@@ -546,7 +550,10 @@ class OrdersController extends SecureBaseController
                     'billed_by' => $order['billed_by'],
                     'delivery_by' => $order['delivery_by'],
                     'products_cant' => $items_cant,
-                    'pendients_cant' => $pendient_items);
+                    'pendients_cant' => $pendient_items,
+                    'prepare_in_process' => $order['prepare_in_process'],
+                    'process_user_name' => $process_user['name']
+                );
 
                 $this->returnSuccess(200, $listReport);
             }else{
@@ -594,116 +601,3 @@ class OrdersController extends SecureBaseController
         $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
 }
-
-
-
-
-
-/* array('item_order_id' => $items_order_list[$i]['id'],'product_descr' => $items_order_list[$i]['product_descr'], 'price' => $items_order_list[$i]['price'],
-                      'preci1' => $items_order_list[$i]['preci1'],'preci2' => $items_order_list[$i]['preci2'],'preci3' => $items_order_list[$i]['preci3'],'preci4' => $items_order_list[$i]['preci4'],'preci5' => $items_order_list[$i]['preci5'],
-                      'quantity' => $items_order_list[$i]['quantity'],'loaded' => $items_order_list[$i]['loaded'],'reasigned_quantity' => $items_order_list[$i]['reasigned_quantity'],
-                      'pendient_stock' => $items_order_list[$i]['pendient_stock'],'billing' => $items_order_list[$i]['billing'],
-                      'observation' =>  $items_order_list[$i]['observation'],
-                      'kg' => $items_order_list[$i]['kg'],
-                      'able_kg' => $items_order_list[$i]['able_kg'],
-                      'product_code' => $items_order_list[$i]['product_code'],
-                     );
-
-
-
-
-
-function createNewOrderWithReasigneditems($order_id){
-
-        $order=$this->getModel()->findById($order_id);
-
-        $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
-
-        $next_date = date('Y-m-d', strtotime($order['delivery_date'].' +1 day'));
-
-        $newOrder =array('user_id'=>1,'client_id' => $order['client_id'],
-            'state' => "",
-            'state_check' => "check",
-            'state_prepare' => "toprepare",
-            'state_billing' => "tobilling",
-            'state_delivery' => "todelivery",
-            'tocheck' => "true",
-            'toprepare' => "true",
-            'tobilling' => "false",
-            'todelivery' => "false",
-            'observation' => "",
-            'total_amount' => 0.0,
-            'delivery_date'=> $next_date,
-            'loaded_by'=> $order['loaded_by'],
-            'delivery_by' => "",
-            'prepared_by' => "",
-            'billed_by' => "",
-            'assigned_zone' => $order['assigned_zone'],
-            'loaded_in' => $order['loaded_in'],
-            'signed' => "false",
-            'paid_out' => "false",
-            'paid_amount' => 0.0,
-            'order_reasigned_id' => -1);
-
-
-        $res=$this->model->save($newOrder);
-
-        if($res>= 0){
-            //me guardo el id de la orden a la que van a ser reasignados los productos.
-
-            $this->getModel()->update($order['id'],array('order_reasigned_id' => $res));
-
-            for ($i = 0; $i < count($items_order_list); ++$i) {
-                if($items_order_list[$i]['loaded'] == "false"){
-                    //aca hay que duplicar este item a la nueva orden , porque sino se pirde.
-
-                    $newItem=$items_order_list[$i];
-                    $newItem['order_id']= $res;
-                    $newItem['reasigned_quantity']= "false"; // lo pongo en false para que se pueda cargar en la orden nueva
-
-                    unset($newItem['id']);
-
-                    $resItem = $this->items_order->save($newItem);
-
-                    $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "true"));
-
-                }
-            }
-        }
-    }
-
-
-
-    function deleteOrderWithReasignedItems($order_id){
-
-        $order=$this->model->findById($order_id);
-        if($order['order_reasigned_id'] >= 0){
-
-            $this->items_order->deleteAllByOrderId($order['order_reasigned_id']);
-
-            $this->model->delete($order['order_reasigned_id']);
-
-            $this->model->update($order_id,array('order_reasigned_id' => -1));
-
-            $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
-            for ($i = 0; $i < count($items_order_list); ++$i) {
-                if($items_order_list[$i]['reasigned_quantity'] == "true"){
-
-                    $this->items_order->update($items_order_list[$i]['id'],array('reasigned_quantity' => "false"));
-
-                }
-            }
-        }
-    }
-
-  function isFullOrderCharged(){
-
-        $res=$this->items_order->countItemsLoaded("false",$_GET['order_id']);
-        if($res == 0){
-            return "completa";
-        }else{
-            return "falta";
-        }
-    }
-*/
-
