@@ -12,6 +12,7 @@ require_once  __DIR__.'/../models/OrderModel.php';
 require_once __DIR__.'/../models/ItemOrderModel.php';
 require_once __DIR__.'/../models/ClientModel.php';
 require_once __DIR__.'/../models/UserModel.php';
+require_once __DIR__.'/../models/AssignedZoneModel.php';
 
 class OrdersController extends SecureBaseController
 {
@@ -20,6 +21,7 @@ class OrdersController extends SecureBaseController
 
     private $state_order;
     private $users;
+    private $assigned_zones;
 
     function __construct(){
         parent::__construct();
@@ -27,6 +29,7 @@ class OrdersController extends SecureBaseController
         $this->items_order= new ItemOrderModel();
         $this->clients= new ClientModel();
         $this->users= new UserModel();
+        $this->assigned_zones= new AssignedZoneModel();
 
         $this->state_order="";
     }
@@ -113,11 +116,9 @@ class OrdersController extends SecureBaseController
 
     function listAllOrders(){
 
-            $listReport = array();
-
-            $list_orders_by_deliver_date = $this->model->getAllOrders($this->miniFilter(),$this->getPaginator());
-
-            $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
+        $listReport = array();
+        $list_orders_by_deliver_date = $this->model->getAllOrders($this->miniFilter(),$this->getPaginator());
+        $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
 
     function getReport($list_orders_by_deliver_date,$listReport){
@@ -195,16 +196,35 @@ class OrdersController extends SecureBaseController
         return $listReport;
     }
 
+    /*function checkZones($user_id, $filters){
+
+        $user = $this->users->get();
+       // $user = $this->users->findById($user_id);
+        if($user['category'] == "reparto"){
+
+            $assigned_zones = $this->assigned_zones->findAssignedZones(array('a.user_id" = "'.$user_id.'"'));
+
+            $filZone = array();
+
+            for ($j = 0; $j < count($assigned_zones); ++$j) {
+                $filZone[] = 'assigned_zone = "' . $_GET['zone'] . '"';
+            }
+
+            $conditions = join(' OR ',$filZone);
+
+            $filters[] = $conditions;
+        }
+
+        return $filters;
+    }*/
+
     function getOrdersClient(){
 
-        if(isset($_GET['delivery_date'])) {
-            //si es distinto de todas filtrar por fecha
-        }
-            $listReport = array();
+        $listReport = array();
 
-            $list_orders_by_deliver_date = $this->model->getOrdersClient($this->asingFilters(),$this->getPaginator(),$this->state_order);
+        $list_orders_by_deliver_date = $this->model->getOrdersClient($this->asingFilters(),$this->getPaginator(),$this->state_order);
 
-            $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
+        $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
 
     function deleteRemainingProducts($order_id){
