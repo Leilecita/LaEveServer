@@ -319,11 +319,11 @@ class OrdersController extends SecureBaseController
         $order = $this->model->findById($_GET['order_id']);
 
         if($order['process_user_id'] != -1){
+            $this->returnSuccess(200,array('result' => "reserved"));
+        }else{
             $this->model->update($_GET['order_id'],array('prepare_in_process' => "true"));
             $this->model->update($_GET['order_id'],array('process_user_id' => $_GET['user_id']));
             $this->returnSuccess(200,array('result' => "true"));
-        }else{
-            $this->returnSuccess(200,array('result' => "reserved"));
         }
    }
 
