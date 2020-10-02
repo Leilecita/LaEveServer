@@ -316,9 +316,15 @@ class OrdersController extends SecureBaseController
     }
 
    function takeOrderPrepare(){
-       $this->model->update($_GET['order_id'],array('prepare_in_process' => "true"));
-       $this->model->update($_GET['order_id'],array('process_user_id' => $_GET['user_id']));
-       $this->returnSuccess(200,array('result' => "true"));
+        $order = $this->model->findById($_GET['order_id']);
+
+        if($order['process_user_id'] != -1){
+            $this->model->update($_GET['order_id'],array('prepare_in_process' => "true"));
+            $this->model->update($_GET['order_id'],array('process_user_id' => $_GET['user_id']));
+            $this->returnSuccess(200,array('result' => "true"));
+        }else{
+            $this->returnSuccess(200,array('result' => "reserved"));
+        }
    }
 
     function leaveOrderPrepare(){
