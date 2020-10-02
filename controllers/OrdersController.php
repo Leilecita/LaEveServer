@@ -161,6 +161,7 @@ class OrdersController extends SecureBaseController
 
             $process_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_user_id']);
 
+
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
                 'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
                 'order_state' => $list_orders_by_deliver_date[$j]['state'],
