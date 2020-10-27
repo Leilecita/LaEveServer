@@ -160,6 +160,7 @@ class OrdersController extends SecureBaseController
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
 
             $process_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_user_id']);
+            $process_billing_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_billing_user_id']);
 
 
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
@@ -189,7 +190,9 @@ class OrdersController extends SecureBaseController
                 'products_cant' => $items_cant,
                 'pendients_cant' => $pendient_items,
                 'prepare_in_process' => $list_orders_by_deliver_date[$j]['prepare_in_process'],
-                'process_user_name' => $process_user['name']
+                'billing_in_process' => $list_orders_by_deliver_date[$j]['billing_in_process'],
+                'process_user_name' => $process_user['name'],
+                'process_billing_user_name' => $process_billing_user['name']
 
             );
         }
@@ -197,27 +200,6 @@ class OrdersController extends SecureBaseController
         return $listReport;
     }
 
-    /*function checkZones($user_id, $filters){
-
-        $user = $this->users->get();
-       // $user = $this->users->findById($user_id);
-        if($user['category'] == "reparto"){
-
-            $assigned_zones = $this->assigned_zones->findAssignedZones(array('a.user_id" = "'.$user_id.'"'));
-
-            $filZone = array();
-
-            for ($j = 0; $j < count($assigned_zones); ++$j) {
-                $filZone[] = 'assigned_zone = "' . $_GET['zone'] . '"';
-            }
-
-            $conditions = join(' OR ',$filZone);
-
-            $filters[] = $conditions;
-        }
-
-        return $filters;
-    }*/
 
     function getOrdersClient(){
 
@@ -336,9 +318,34 @@ class OrdersController extends SecureBaseController
         }
    }
 
+    function takeOrderBilling(){
+        $order = $this->model->findById($_GET['order_id']);
+
+        if($order['process_billing_user_id'] != -1){
+            $user = $this->users->findById($order['process_billing_user_id']);
+            $res = array('result' => "reserved", 'process_user_name' => $user['name']);
+            $this->returnSuccess(200,$res);
+        }else{
+
+            $this->model->update($_GET['order_id'],array('billing_in_process' => "true"));
+            $this->model->update($_GET['order_id'],array('process_billing_user_id' => $_GET['user_id']));
+
+            $user = $this->users->findById($_GET['user_id']);
+
+            $res = array('result' => "true", 'process_user_name' => $user['name']);
+            $this->returnSuccess(200,$res);
+        }
+    }
+
     function leaveOrderPrepare(){
         $this->model->update($_GET['order_id'],array('prepare_in_process' => "false"));
         $this->model->update($_GET['order_id'],array('process_user_id' => -1));
+        $this->returnSuccess(200,array('result' => "false"));
+    }
+
+    function leaveOrderBilling(){
+        $this->model->update($_GET['order_id'],array('billing_in_process' => "false"));
+        $this->model->update($_GET['order_id'],array('process_billing_user_id' => -1));
         $this->returnSuccess(200,array('result' => "false"));
     }
 
@@ -360,8 +367,12 @@ class OrdersController extends SecureBaseController
                 if($_GET['state'] == "prepare"){
 
                     $this->model->update($_GET['order_id'],array('tobilling' => "true"));
+
+
                 }else{
                     $this->model->update($_GET['order_id'],array('tobilling' => "false"));
+
+
                 }
 
             }else if($_GET['state_name'] == 'tobilling'){
@@ -561,6 +572,7 @@ class OrdersController extends SecureBaseController
                 $pendient_items = $this->items_order->countPendientItems("false" ,$_GET['order_id']);
 
                 $process_user = $this->users->findById($order['process_user_id']);
+                $process_billing_user = $this->users->findById($order['process_billing_user_id']);
 
                 $listReport = array('order_created' =>$order['created'],
                     'order_obs' => $order['observation'],'order_id' => $order['id'],
@@ -588,7 +600,9 @@ class OrdersController extends SecureBaseController
                     'products_cant' => $items_cant,
                     'pendients_cant' => $pendient_items,
                     'prepare_in_process' => $order['prepare_in_process'],
-                    'process_user_name' => $process_user['name']
+                    'billing_in_process' => $order['billing_in_process'],
+                    'process_user_name' => $process_user['name'],
+                    'process_billing_user_name' => $process_user['name']
                 );
 
                 $this->returnSuccess(200, $listReport);
