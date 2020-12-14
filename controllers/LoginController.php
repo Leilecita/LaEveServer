@@ -36,7 +36,6 @@ class LoginController extends BaseController
         $password =  $_GET['hash_password'];
         $passwordHashed = SessionHelper::passwordToHash($password);
 
-        error_log("holaaa");
 
         $user = $this->model->find(array('name = "'.$username.'"','hash_password = "'.$passwordHashed.'"'));
         if($user){
