@@ -187,7 +187,7 @@ class OrdersController extends SecureBaseController
 
         for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
 
-            $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
+            //$items_order_list = $this->items_order->findAllItems(array('order_id = "' .$list_orders_by_deliver_date[$j]['order_id'].'"'));
 
             $array_item_product = array();
 
@@ -196,7 +196,7 @@ class OrdersController extends SecureBaseController
             $array_item_product_add = array();
 
             $total_amount=0;
-            for ($i = 0; $i < count($items_order_list); ++$i) {
+           /* for ($i = 0; $i < count($items_order_list); ++$i) {
 
                 if($items_order_list[$i]['billing'] == "remito"){
                     $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
@@ -216,7 +216,7 @@ class OrdersController extends SecureBaseController
                         $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
                     }
                 }
-            }
+            }*/
 
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
