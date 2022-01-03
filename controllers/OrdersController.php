@@ -114,11 +114,26 @@ class OrdersController extends SecureBaseController
         return $filters;
     }
 
+    function getPaginatorOrders(){
+        $paginator = array('offset' => 0, 'limit' => 2);
+        if(isset($_GET['page'])){
+            $paginator['offset'] = PAGE_SIZE * $_GET['page'];
+        }
+        return $paginator;
+    }
+
     function listAllOrders(){
 
         $listReport = array();
-        $list_orders_by_deliver_date = $this->model->getAllOrders($this->miniFilter(),$this->getPaginator());
+        $list_orders_by_deliver_date = $this->model->getAllOrders($this->miniFilter(),$this->getPaginatorOrders());
         $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
+    }
+
+    function listAllOrdersLEILA(){
+
+        $listReport = array();
+        $list_orders_by_deliver_date = $this->model->getAllOrdersLeila($this->miniFilter(),$this->getPaginator());
+        $this->returnSuccess(200, $list_orders_by_deliver_date);
     }
 
     function getReport($list_orders_by_deliver_date,$listReport){

@@ -157,6 +157,17 @@ class OrderModel extends BaseModel
 
     }
 
+
+    function getAllOrdersLEILA($filters=array(),$paginator=array()){
+
+        $conditions = join(' AND ',$filters);
+        // $query = 'SELECT *, o.id as order_id FROM orders o JOIN clients c ON o.client_id = c.id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.'.$order_state.' DESC, o.created DESC , o.state_prepare DESC
+        $query = 'SELECT *, o.id as order_id FROM orders o JOIN items_order i ON o.id = i.order_id '.( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY o.delivery_date DESC
+        LIMIT '.$paginator['limit'].' OFFSET '.$paginator['offset'];
+        return $this->getDb()->fetch_all($query);
+
+    }
+
     function getTheFirstOfList($filters=array()){
         $conditions = join(' AND ',$filters);
         $query = 'SELECT * FROM '.$this->tableName .( empty($filters) ?  '' : ' WHERE '.$conditions ).' ORDER BY created DESC';
