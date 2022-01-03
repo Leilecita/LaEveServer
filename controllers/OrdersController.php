@@ -151,7 +151,6 @@ class OrdersController extends SecureBaseController
 
         $total_amount=0;
 
-        $listReport = array();
         for ($i = 0; $i < count($items_order_list); ++$i) {
 
             if($items_order_list[$i]['billing'] == "remito"){
@@ -174,14 +173,14 @@ class OrdersController extends SecureBaseController
             }
         }
 
-        $listReport[] = array(
+        $listReport = array(
             'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add
         );
 
         $this->returnSuccess(200, $listReport);
     }
 
-
+/*agregp*/
 
 
     function getReport($list_orders_by_deliver_date,$listReport){
