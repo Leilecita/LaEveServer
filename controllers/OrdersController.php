@@ -136,6 +136,54 @@ class OrdersController extends SecureBaseController
         $this->returnSuccess(200, $list_orders_by_deliver_date);
     }
 
+    /*agrego*/
+
+    function getItemsByReportByOrderId(){
+        $order_id = $_GET['order_id'];
+
+        $items_order_list = $this->items_order->findAllItems(array('order_id = "' .$order_id.'"'));
+
+        $array_item_product = array();
+
+        $array_item_product_rem = array();
+
+        $array_item_product_add = array();
+
+        $total_amount=0;
+
+        $listReport = array();
+        for ($i = 0; $i < count($items_order_list); ++$i) {
+
+            if($items_order_list[$i]['billing'] == "remito"){
+                $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
+
+            }else if($items_order_list[$i]['billing'] == "factura"){
+                $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
+
+            }else{
+                $array_item_product_add[] =  $this->createReportItem($items_order_list[$i],$array_item_product_add);
+            }
+
+            if($items_order_list[$i]['loaded'] == "true"){
+
+                if($items_order_list[$i]['able_kg'] == "true"){
+                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['kg']);
+                }else{
+                    $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+                }
+            }
+        }
+
+        $listReport[] = array(
+            'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add
+        );
+
+        $this->returnSuccess(200, $listReport);
+    }
+
+
+
+
     function getReport($list_orders_by_deliver_date,$listReport){
 
         for ($j = 0; $j < count($list_orders_by_deliver_date); ++$j) {
