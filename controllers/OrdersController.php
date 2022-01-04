@@ -174,7 +174,10 @@ class OrdersController extends SecureBaseController
         }
 
         $listReport = array(
-            'items' => $array_item_product,'items_rem' => $array_item_product_rem,'items_add' => $array_item_product_add
+            'items' => $array_item_product,
+            'items_rem' => $array_item_product_rem,
+            'items_add' => $array_item_product_add,
+            'amount_order' => $total_amount
         );
 
         $this->returnSuccess(200, $listReport);
