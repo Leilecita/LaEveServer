@@ -270,7 +270,7 @@ class OrdersController extends SecureBaseController
 
         $listReport = array();
 
-        $list_orders_by_deliver_date = $this->model->getOrdersClient($this->asingFilters(),$this->getPaginator(),$this->state_order);
+        $list_orders_by_deliver_date = $this->model->getOrdersClient($this->asingFilters(),$this->getPaginatorOrders(),$this->state_order);
 
         $this->returnSuccess(200, $this->getReport($list_orders_by_deliver_date,$listReport));
     }
