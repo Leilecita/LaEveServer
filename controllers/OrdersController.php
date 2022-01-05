@@ -230,7 +230,12 @@ class OrdersController extends SecureBaseController
                 $proces_user_name = $process_user['name'];
             }
 
-            $process_billing_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_billing_user_id']);
+            $process_billing_user_name = "";
+            if($list_orders_by_deliver_date[$j]['process_billing_user_id'] > 0){
+                $process_billing_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_billing_user_id']);
+                $process_billing_user_name =  $process_billing_user['name'];
+            }
+
 
 
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
@@ -263,7 +268,8 @@ class OrdersController extends SecureBaseController
                 'billing_in_process' => $list_orders_by_deliver_date[$j]['billing_in_process'],
                // 'process_user_name' => $process_user['name'],
                 'process_user_name' => $proces_user_name,
-                'process_billing_user_name' => $process_billing_user['name']
+               // 'process_billing_user_name' => $process_billing_user['name']
+                'process_billing_user_name' => $process_billing_user_name
 
             );
         }
