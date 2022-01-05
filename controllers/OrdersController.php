@@ -224,7 +224,12 @@ class OrdersController extends SecureBaseController
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
 
-            $process_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_user_id']);
+            $proces_user_name = "";
+            if($list_orders_by_deliver_date[$j]['process_user_id'] > 0){
+                $process_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_user_id']);
+                $proces_user_name = $process_user['name'];
+            }
+
             $process_billing_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_billing_user_id']);
 
 
@@ -256,7 +261,8 @@ class OrdersController extends SecureBaseController
                 'pendients_cant' => $pendient_items,
                 'prepare_in_process' => $list_orders_by_deliver_date[$j]['prepare_in_process'],
                 'billing_in_process' => $list_orders_by_deliver_date[$j]['billing_in_process'],
-                'process_user_name' => $process_user['name'],
+               // 'process_user_name' => $process_user['name'],
+                'process_user_name' => $proces_user_name,
                 'process_billing_user_name' => $process_billing_user['name']
 
             );
@@ -636,7 +642,14 @@ class OrdersController extends SecureBaseController
                 $items_cant = $this->items_order->countItemsByOrder($_GET['order_id']);
                 $pendient_items = $this->items_order->countPendientItems("false" ,$_GET['order_id']);
 
-                $process_user = $this->users->findById($order['process_user_id']);
+                $proces_user_name="";
+                if($order['process_user_id'] > 0 ){
+
+                    $process_user = $this->users->findById($order['process_user_id']);
+                    $proces_user_name = $process_user['name'];
+                }
+
+
                 $process_billing_user = $this->users->findById($order['process_billing_user_id']);
 
                 $listReport = array('order_created' =>$order['created'],
@@ -666,8 +679,10 @@ class OrdersController extends SecureBaseController
                     'pendients_cant' => $pendient_items,
                     'prepare_in_process' => $order['prepare_in_process'],
                     'billing_in_process' => $order['billing_in_process'],
-                    'process_user_name' => $process_user['name'],
-                    'process_billing_user_name' => $process_user['name']
+                   // 'process_user_name' => $process_user['name'],
+                    'process_user_name' => $proces_user_name,
+                    //'process_billing_user_name' => $process_user['name']
+                    'process_billing_user_name' => $proces_user_name
                 );
 
                 $this->returnSuccess(200, $listReport);
