@@ -115,9 +115,9 @@ class OrdersController extends SecureBaseController
     }
 
     function getPaginatorOrders(){
-        $paginator = array('offset' => 0, 'limit' => 2);
+        $paginator = array('offset' => 0, 'limit' => 6);
         if(isset($_GET['page'])){
-            $paginator['offset'] = 2 * $_GET['page'];
+            $paginator['offset'] = 6 * $_GET['page'];
         }
         return $paginator;
     }

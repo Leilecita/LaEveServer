@@ -33,9 +33,9 @@ class ItemsOrderController extends SecureBaseController
 
     function getItemsByOrderId(){
 
-        $itemsRem=$this->getModel()->findAllItems($this->getFiltersItems("remito"));
-        $itemsFact=$this->getModel()->findAllItems($this->getFiltersItems("factura"));
-        $itemsAdd=$this->getModel()->findAllItems($this->getFiltersItems("agregado"));
+        $itemsRem=$this->model->findAllItems($this->getFiltersItems("remito"));
+        $itemsFact=$this->model->findAllItems($this->getFiltersItems("factura"));
+        $itemsAdd=$this->model->findAllItems($this->getFiltersItems("agregado"));
 
         $resp=array('itemsFact' => $itemsFact, 'itemsRem' => $itemsRem, 'itemsAdd' => $itemsAdd);
 
