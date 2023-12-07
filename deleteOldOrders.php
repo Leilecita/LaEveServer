@@ -19,8 +19,8 @@ $orders = $model->findAllAll($filter);
 
 for ($i = 0; $i < count($orders); ++$i) {
 
-    var_dump($items_order->deleteAllByOrderId($orders[$i]['id']));
-    var_dump($model->delete($orders[$i]['id']));
+    $items_order->deleteAllByOrderId($orders[$i]['id']);
+    $model->delete($orders[$i]['id']);
 
 }
 
