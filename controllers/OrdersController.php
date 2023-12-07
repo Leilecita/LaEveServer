@@ -53,6 +53,8 @@ class OrdersController extends SecureBaseController
     function asingFilters(){
         $filters=array();
 
+        $filters[] = 'o.created >= "'."2022-12-20 10:10:10".'"';
+
         if(isset($_GET['delivery_date'])) {
             if($_GET['delivery_date'] != 'todas') {
                 $filters[] = 'delivery_date = "' . $_GET['delivery_date'] . '"';
