@@ -12,7 +12,7 @@ $filter=array();
 
 //$previous_date = date('Y-m-d', strtotime(  date("Y-m-d").' -4 day'))." 00:00:00";
 
-$filter[]='created <= "' ."2022-06-01 23:10:10".'"';
+$filter[]='created <= "' ."2022-12-01 23:10:10".'"';
 
 $orders = $model->findAllAll($filter);
 
