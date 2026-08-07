@@ -500,8 +500,8 @@ class OrdersController extends SecureBaseController
 
         }else if ($_GET['state_name']== 'todelivery'){
 
-            $checked=$this->model->countDelivery($_GET['delivery_date'],'delivery');
-            $pendients=$this->model->countDelivery($_GET['delivery_date'],'todelivery');
+            $checked = $this->model->countDelivery($_GET['delivery_date'],'delivery', $_GET['zone']);
+            $pendients = $this->model->countDelivery($_GET['delivery_date'],'todelivery', $_GET['zone']);
 
         }else if ($_GET['state_name']== 'tobilling'){
 
