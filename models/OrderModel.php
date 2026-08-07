@@ -31,7 +31,9 @@ class OrderModel extends BaseModel
 
         //$response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ?',$delivery_date,$state);
        // $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ? AND state_billing = ?',$delivery_date,$state,"billing");
-        $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_delivery = ? AND state_billing = ?',$state,"billing");
+       // $response = $this->getDb()->fetch_row('SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE state_delivery = ? AND state_billing = ?',$state,"billing");
+        $response = $this->getDb()->fetch_row(
+            'SELECT COUNT(id) AS total FROM '.$this->tableName.' WHERE delivery_date = ? AND state_delivery = ? AND state_billing = ?', $delivery_date, $state, "billing");
 
         if($response['total']!=null){
             return $response['total'];

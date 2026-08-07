@@ -202,27 +202,6 @@ class OrdersController extends SecureBaseController
             $array_item_product_add = array();
 
             $total_amount=0;
-           /* for ($i = 0; $i < count($items_order_list); ++$i) {
-
-                if($items_order_list[$i]['billing'] == "remito"){
-                    $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
-
-                }else if($items_order_list[$i]['billing'] == "factura"){
-                    $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
-
-                }else{
-                    $array_item_product_add[] =  $this->createReportItem($items_order_list[$i],$array_item_product_add);
-                }
-
-                if($items_order_list[$i]['loaded'] == "true"){
-
-                    if($items_order_list[$i]['able_kg'] == "true"){
-                        $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['kg']);
-                    }else{
-                        $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
-                    }
-                }
-            }*/
 
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);
@@ -238,8 +217,6 @@ class OrdersController extends SecureBaseController
                 $process_billing_user = $this->users->findById($list_orders_by_deliver_date[$j]['process_billing_user_id']);
                 $process_billing_user_name =  $process_billing_user['name'];
             }
-
-
 
             $listReport[] = array('order_created' => $list_orders_by_deliver_date[$j]['created'],
                 'order_obs' => $list_orders_by_deliver_date[$j]['observation'],'order_id' => $list_orders_by_deliver_date[$j]['order_id'],
@@ -269,9 +246,7 @@ class OrdersController extends SecureBaseController
                 'pendients_cant' => $pendient_items,
                 'prepare_in_process' => $list_orders_by_deliver_date[$j]['prepare_in_process'],
                 'billing_in_process' => $list_orders_by_deliver_date[$j]['billing_in_process'],
-               // 'process_user_name' => $process_user['name'],
                 'process_user_name' => $proces_user_name,
-               // 'process_billing_user_name' => $process_billing_user['name']
                 'process_billing_user_name' => $process_billing_user_name
 
             );
@@ -279,7 +254,27 @@ class OrdersController extends SecureBaseController
 
         return $listReport;
     }
+    /* for ($i = 0; $i < count($items_order_list); ++$i) {
 
+         if($items_order_list[$i]['billing'] == "remito"){
+             $array_item_product_rem[] = $this->createReportItem($items_order_list[$i],$array_item_product_rem);
+
+         }else if($items_order_list[$i]['billing'] == "factura"){
+             $array_item_product[] = $this->createReportItem($items_order_list[$i],$array_item_product);
+
+         }else{
+             $array_item_product_add[] =  $this->createReportItem($items_order_list[$i],$array_item_product_add);
+         }
+
+         if($items_order_list[$i]['loaded'] == "true"){
+
+             if($items_order_list[$i]['able_kg'] == "true"){
+                 $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['kg']);
+             }else{
+                 $total_amount=$total_amount+($items_order_list[$i]['price']*$items_order_list[$i]['quantity']);
+             }
+         }
+     }*/
 
     function getOrdersClient(){
 
