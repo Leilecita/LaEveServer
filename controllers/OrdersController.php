@@ -201,7 +201,8 @@ class OrdersController extends SecureBaseController
 
             $array_item_product_add = array();
 
-            $total_amount=0;
+          //  $total_amount=0;
+            $total_amount = $this->items_order->getOrderAmount($list_orders_by_deliver_date[$j]['order_id']);
 
             $items_cant = $this->items_order->countItemsByOrder($list_orders_by_deliver_date[$j]['order_id']);
             $pendient_items = $this->items_order->countPendientItems("false" ,$list_orders_by_deliver_date[$j]['order_id']);

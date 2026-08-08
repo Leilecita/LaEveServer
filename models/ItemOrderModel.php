@@ -60,4 +60,13 @@ class ItemOrderModel extends BaseModel
             return $response['total'];
         }
     }
+
+    function getOrderAmount($order_id){
+
+        $query = "SELECT COALESCE(SUM(CASE WHEN able_kg = 'true' THEN price * kg ELSE price * quantity END),0) AS total FROM ".$this->tableName." WHERE order_id = ? AND loaded = 'true'";
+        $response = $this->getDb()->fetch_row($query,$order_id);
+
+        return isset($response['total']) ? $response['total'] : 0;
+
+    }
 }
